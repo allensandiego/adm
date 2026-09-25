@@ -1,6 +1,6 @@
 # Research & Decisions: Seed Data & End-to-End Testing
 
-**Date**: 2026-09-21 | Companion to [plan.md](plan.md) and [spec.md](spec.md)
+**Date**: 2026-09-26 (refreshed) | Companion to [plan.md](plan.md) and [spec.md](spec.md)
 
 ## Scope
 
@@ -112,13 +112,16 @@ mechanism, the browser-test harness, and how to keep the suite deterministic and
 ### D-9: Package alignment — use the real base package
 
 - **Decision**: New seed and E2E code uses the repository's actual base package
-  `com.allensandiego.adm`. Feature 001's plan/tasks use a `com.allensandiego.rbac` placeholder; that
-  must be reconciled to the real package during feature 001 implementation before this
-  feature's seeder can reference its entities/services.
+  `com.allensandiego.adm`, matching `AdmApplication` and the `pom.xml` groupId
+  `com.allensandiego`. The seeder references feature 001's entities/services directly under this
+  package.
 - **Rationale**: The executable code base is `com.allensandiego.adm` (`AdmApplication`,
   `pom.xml` groupId `com.allensandiego`). Plans must reflect the real layout to be executable.
-- **Alternatives considered**: Adopting `com.allensandiego.rbac` — rejected: renames existing code
-  for no functional gain and contradicts the checked-in application.
+- **Status**: Resolved. Feature 001's plan was refreshed on 2026-09-26 to use
+  `com.allensandiego.adm` throughout, so no reconciliation remains outstanding.
+- **Alternatives considered**: Adopting a `com.example.rbac` or `com.allensandiego.rbac` package —
+  rejected: renames existing code for no functional gain and contradicts the checked-in
+  application.
 
 ## Resolved unknowns
 

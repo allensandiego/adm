@@ -1,6 +1,6 @@
 # E2E Scenario Contract
 
-**Date**: 2026-09-21 | Implements FR-006..FR-018, SC-001/SC-002/SC-005/SC-008.
+**Date**: 2026-09-26 (refreshed) | Implements FR-006..FR-018, SC-001/SC-002/SC-005/SC-008.
 
 ## Conventions
 

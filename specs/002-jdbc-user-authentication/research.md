@@ -1,6 +1,6 @@
 # Research: JDBC User Authentication
 
-**Date**: 2026-09-21 | For feature `002-jdbc-user-authentication` | Output of Phase 0.
+**Date**: 2026-09-26 (refreshed) | For feature `002-jdbc-user-authentication` | Output of Phase 0.
 
 ## Open questions addressed
 

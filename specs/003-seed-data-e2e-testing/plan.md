@@ -1,6 +1,6 @@
 # Implementation Plan: Seed Data & End-to-End Testing
 
-**Branch**: `003-seed-data-e2e-testing` | **Date**: 2026-09-21 | **Spec**: [spec.md](spec.md)
+**Branch**: `003-seed-data-e2e-testing` | **Date**: 2026-09-26 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/003-seed-data-e2e-testing/spec.md`
 
@@ -24,10 +24,12 @@ test data model in [data-model.md](data-model.md); run/validation guide in
 **Language/Version**: Java 21 (`pom.xml` `<java.version>21</java.version>`; constitution
 Principle III requires 17+)
 
-**Primary Dependencies**: Spring Boot 4.1.1 (Maven parent); for test support, Microsoft
-Playwright for Java plus JUnit 5 (via the existing `spring-boot-starter-*-test` starters). The
-application under test adds the features 001/002 stack (Spring Web, Security, Thymeleaf,
-Validation, H2) during their implementation; this feature adds test-scope dependencies only.
+**Primary Dependencies**: Spring Boot 4.1.1 (Maven parent). For test support,
+`com.microsoft.playwright:playwright` 1.63.0 (already declared in `pom.xml`) plus JUnit 5 via
+`spring-boot-starter-test` and `spring-security-test`. The application under test adds the
+features 001/002 stack (Spring Web, Security, Thymeleaf, Validation, H2) during their
+implementation; this feature adds test-scope dependencies only, plus the Maven Failsafe
+plugin binding for the E2E gate (research D-3, D-7).
 
 **Storage**: Embedded H2 (test/development profiles), Hibernate-managed schema per
 constitution v2.0.0; seeding is an idempotent application-level seeder (no migration tool),
@@ -92,8 +94,8 @@ specs/003-seed-data-e2e-testing/
 ### Source Code (repository root)
 
 ```text
-adm/
-├── pom.xml                                   # add test-scope Playwright + failsafe (research D-3)
+adm/                                       # root package com.allensandiego.adm
+├── pom.xml                                   # Playwright 1.63.0 present; add Failsafe (research D-3/D-7)
 ├── coreui/                                   # vendored CoreUI templates = screens under test
 └── src/
     ├── main/
@@ -101,6 +103,7 @@ adm/
     │   │   └── config/
     │   │       └── TestDataSeeder.java        # profile-gated idempotent seeder (D-1/D-8)
     │   └── resources/
+    │       ├── application.properties         # base config (features 001/002)
     │       └── application-test.properties     # seed + E2E defaults (D-8)
     └── test/
         ├── java/com/allensandiego/adm/
@@ -113,12 +116,12 @@ adm/
             └── e2e/                            # seed expectations, scenario data
 ```
 
-**Structure Decision**: Single Spring Boot Maven project. Test-support code sits beside the
-production code it seeds: the profile-gated seeder in `.../config/`, and the Playwright suite
-under `src/test/java/.../e2e/` with a small `support/` harness. E2E scenarios are separate
-classes per journey family so they remain independently runnable (FR-012). The actual base
-package is `com.allensandiego.adm`; feature 001's plan uses a `com.allensandiego.rbac` placeholder
-that must be reconciled during implementation (research D-9).
+**Structure Decision**: Single Spring Boot Maven project rooted at the repository
+(`com.allensandiego.adm`). Test-support code sits beside the production code it seeds: the
+profile-gated seeder in `.../config/`, and the Playwright suite under
+`src/test/java/.../e2e/` with a small `support/` harness. E2E scenarios are separate classes
+per journey family so they remain independently runnable (FR-012). The upstream CoreUI
+template stays vendored in `coreui/` and is the markup the suite drives (FR-018).
 
 ## Complexity Tracking
 

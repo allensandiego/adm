@@ -1,6 +1,6 @@
 # Quickstart: Seed Data & End-to-End Testing
 
-**Date**: 2026-09-21 | Validates: [spec.md](spec.md) · [contracts/](contracts/README.md) ·
+**Date**: 2026-09-26 (refreshed) | Validates: [spec.md](spec.md) · [contracts/](contracts/README.md) ·
 [data-model.md](data-model.md)
 
 ## Prerequisites

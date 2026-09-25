@@ -1,6 +1,6 @@
 # Seed Data Contract
 
-**Date**: 2026-09-21 | Implements FR-001..FR-005, SC-003.
+**Date**: 2026-09-26 (refreshed) | Implements FR-001..FR-005, SC-003.
 
 ## Guarantees
 

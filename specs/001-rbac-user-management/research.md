@@ -1,6 +1,6 @@
 # Research & Decisions: RBAC User Management
 
-**Date**: 2026-09-21
+**Date**: 2026-09-21 (refreshed 2026-09-26)
 
 ## Scope
 
@@ -90,6 +90,32 @@ platform unknowns to research (fresh repository; single stack prescribed).
   and mutation.
 - **Alternatives considered**: None meaningful.
 
+### D-9: Pinned runtime versions
+
+- **Decision**: Target Java 21 and Spring Boot 4.1.1 as declared in the repository `pom.xml`
+  (`<java.version>21</java.version>`, `spring-boot-starter-parent` 4.1.1), not the Java 17 /
+  Spring Boot 3.x baseline the constitution states as a floor.
+- **Rationale**: Constitution Principle III sets Java 17 LTS as a *minimum* ("or newer"), so
+  Java 21 is compliant. The build is the authoritative source for the exact versions actually
+  resolved and present in the local repository; planning against a version the build does not
+  use would produce a plan that cannot compile.
+- **Alternatives considered**:
+  - Downgrading `pom.xml` to Java 17 / Spring Boot 3.x — rejected: not requested, and it would
+    regress the already-working build.
+  - Leaving the version unstated — rejected: leaves a NEEDS CLARIFICATION in Technical Context.
+
+### D-10: Root package and configuration file
+
+- **Decision**: Place all new code under the existing root package `com.allensandiego.adm`
+  (artifact `adm`, single-module Maven project at the repository root) and extend the existing
+  `src/main/resources/application.properties`. The upstream CoreUI template stays vendored in
+  `coreui/`; its CSS/JS are served from `src/main/resources/static/`.
+- **Rationale**: The repository already establishes this package and this configuration file;
+  aligning with them avoids a parallel `com.example.rbac` tree and a competing
+  `application.yml` that would shadow the active configuration.
+- **Alternatives considered**: New `com.example.rbac` package and `application.yml` — rejected:
+  duplicates the application root and splits configuration across two files.
+
 ## Resolved unknowns
 
-All Technical Context unknowns resolved by D-1..D-8. No `NEEDS CLARIFICATION` items remain.
+All Technical Context unknowns resolved by D-1..D-10. No `NEEDS CLARIFICATION` items remain.

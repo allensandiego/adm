@@ -1,6 +1,6 @@
 # Quickstart: JDBC User Authentication — Validation Guide
 
-**Date**: 2026-09-21 | Contracts: [contracts/](contracts/README.md) | Data model:
+**Date**: 2026-09-26 (refreshed) | Contracts: [contracts/](contracts/README.md) | Data model:
 [data-model.md](data-model.md) | Research: [research.md](research.md)
 
 This is a run/validation guide, not an implementation reference. It proves the feature

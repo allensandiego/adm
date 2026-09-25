@@ -1,14 +1,16 @@
 # Quickstart: RBAC User Management
 
-**Date**: 2026-09-21 | Validates: [spec.md](spec.md) · [contracts/](contracts/README.md) ·
+**Date**: 2026-09-26 (refreshed) | Validates: [spec.md](spec.md) · [contracts/](contracts/README.md) ·
 [data-model.md](data-model.md)
 
 ## Prerequisites
 
-- JDK 17+ (constitution Principle III)
-- Maven 3.8+ (or the IDE import of choice)
+- JDK 21 (`pom.xml` `<java.version>`; constitution floor is Java 17 LTS)
+- Maven 3.8+ (or the IDE import of choice) — the wrapper `./mvnw` is committed
 - No external database — embedded H2 with Hibernate-managed schema is used (constitution
   v2.0.0)
+- CoreUI Admin Bootstrap 5 assets present in `src/main/resources/static/` (sourced from the
+  vendored `coreui/` template) so screens render unstyled-free
 
 ## Setup & run
 

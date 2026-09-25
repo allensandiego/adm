@@ -1,6 +1,6 @@
 # Data Model: RBAC User Management
 
-**Date**: 2026-09-21 | Derived from spec FR-001..FR-015 and constitution v2.0.0.
+**Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-015 and constitution v2.0.0.
 
 ## Conventions
 

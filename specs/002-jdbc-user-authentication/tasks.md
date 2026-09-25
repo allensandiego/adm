@@ -25,8 +25,8 @@ testing of each story.
 ## Path Conventions
 
 - Single Spring Boot Maven project at repository root.
-- Base package (actual): `com.allensandiego.adm` — feature 001's `com.allensandiego.rbac`
-  placeholder is reconciled to this.
+- Base package: `com.allensandiego.adm` (matches `AdmApplication` and the `pom.xml` groupId
+  `com.allensandiego`).
 - Main sources: `src/main/java/com/allensandiego/adm/`; tests:
   `src/test/java/com/allensandiego/adm/`; views: `src/main/resources/templates/`.
 - Config: `src/main/resources/application.properties` (embedded H2, Hibernate `ddl-auto`).
@@ -41,11 +41,13 @@ testing of each story.
 
 **Purpose**: Build dependencies and configuration for the auth surface
 
-- [ ] T001 Verify and extend `pom.xml` for the auth surface: ensure
+- [ ] T001 Verify `pom.xml` already carries the auth surface and add nothing that is missing:
       `spring-boot-starter-web`, `spring-boot-starter-thymeleaf`,
-      `spring-boot-starter-validation`, `com.h2database:h2` (runtime), and
-      `spring-boot-starter-test` (test) are present alongside `spring-boot-starter-security`
-      and `spring-boot-starter-data-jdbc`; keep `spring-boot-starter-security-test` (test)
+      `spring-boot-starter-validation`, `spring-boot-starter-data-jpa`,
+      `spring-boot-starter-data-jdbc`, `spring-boot-starter-security`, `com.h2database:h2`
+      (runtime), and for tests `spring-boot-starter-test` + `spring-security-test` — note the
+      Spring Security test artifact is `org.springframework.security:spring-security-test`,
+      NOT `spring-boot-starter-security-test`, which does not exist
 - [ ] T002 [P] Configure `src/main/resources/application.properties`: embedded H2 datasource,
       `spring.jpa.hibernate.ddl-auto=update`, `spring.jpa.open-in-view=false`, UTC timezone,
       `server.port=8080`, and logging that never emits credentials (auth loggers at INFO, no
@@ -263,8 +265,10 @@ password → refused; make five failed attempts → further attempts are throttl
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java` ensure credentials
       are never logged, CSRF is enabled for login/logout, and authenticated responses send
       `Cache-Control: no-store` (FR-005/FR-013)
-- [ ] T036 [P] Update documentation: `HELP.md` and the run commands in
-      `specs/002-jdbc-user-authentication/quickstart.md` if they changed
+- [ ] T036 [P] Update documentation: refresh `specs/002-jdbc-user-authentication/quickstart.md`
+      run commands and the endpoint/status tables in
+      `specs/002-jdbc-user-authentication/contracts/authentication.md` if the implementation
+      diverged; there is no `HELP.md` in this repository, so do not create one
 - [ ] T037 Run `./mvnw test` and execute the
       `specs/002-jdbc-user-authentication/quickstart.md` smoke scenarios; resolve failures so
       SC-001..SC-008 all pass
@@ -348,5 +352,7 @@ Task: "Auth-event audit tests in src/test/java/com/allensandiego/adm/security/Au
 - Each user story is independently completable and testable
 - Verify tests fail before implementing; commit after each task or logical group
 - Stop at any checkpoint to validate a story independently
-- Feature 001's `com.allensandiego.rbac` placeholder is reconciled to the actual base package
-  `com.allensandiego.adm`; all paths above use the actual package
+- All paths above use the real base package `com.allensandiego.adm`; feature 001's plan was
+  refreshed on 2026-09-26 to the same package, so no package reconciliation remains
+- Test artifact names matter: the Spring Security test dependency is
+  `org.springframework.security:spring-security-test` (see T001)

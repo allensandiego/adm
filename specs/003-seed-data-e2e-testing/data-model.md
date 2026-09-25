@@ -1,6 +1,6 @@
 # Data Model: Seed Data & End-to-End Testing
 
-**Date**: 2026-09-21 | Derived from spec FR-001..FR-018 and decisions D-1..D-9.
+**Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-018 and decisions D-1..D-9.
 
 This feature introduces **no new product entities**. It specifies the seeded *test data* over
 the five RBAC entities defined in feature 001, plus the E2E run concepts. References:

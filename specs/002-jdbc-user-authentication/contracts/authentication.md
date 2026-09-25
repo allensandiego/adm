@@ -1,6 +1,6 @@
 # Authentication Contract: Sign-In, Sign-Out, Session
 
-**Date**: 2026-09-21 | Part of the feature-002 interface contracts ([README](README.md)).
+**Date**: 2026-09-26 (refreshed) | Part of the feature-002 interface contracts ([README](README.md)).
 
 ## Endpoints
 
