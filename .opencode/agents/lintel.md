@@ -3,7 +3,6 @@ name: lintel
 description: A specialized sub-agent for non-destructive code review, quality audits, and safety checks.
 mode: subagent
 model: lmstudio/gemma-4-12b-it
-max_tokens: 65536
 temperature: 1.5
 top_p: 0.95
 top_k: 64

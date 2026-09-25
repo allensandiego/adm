@@ -1,0 +1,4 @@
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.allensandiego.adm.security: DEBUG

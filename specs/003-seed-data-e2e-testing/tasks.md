@@ -41,16 +41,16 @@ testing of each story.
 
 **Purpose**: E2E build tooling and environment configuration
 
-- [ ] T001 Add test-scope `com.microsoft.playwright:playwright` and configure
+- [X] T001 Add test-scope `com.microsoft.playwright:playwright` and configure
       `maven-failsafe-plugin` (runs `*IT` / E2E classes) plus `exec-maven-plugin` (browser
       install) in `pom.xml`
-- [ ] T002 [P] Create `src/main/resources/application-test.properties` with seed and E2E
+- [X] T002 [P] Create `src/main/resources/application-test.properties` with seed and E2E
       defaults: seeding enabled, `app.seed.admin-password`, and `e2e.base-url` /
       `e2e.headless` / `e2e.artifacts-dir` per contracts/README.md
-- [ ] T003 [P] Create the E2E package skeleton `src/test/java/com/allensandiego/adm/e2e/` and
+- [X] T003 [P] Create the E2E package skeleton `src/test/java/com/allensandiego/adm/e2e/` and
       `.../e2e/support/`, plus `src/test/resources/e2e/`, with a short package README noting
       `*IT` naming and the Failsafe wiring
-- [ ] T004 [P] Document suite invocation, browser provisioning, and artifact locations in
+- [X] T004 [P] Document suite invocation, browser provisioning, and artifact locations in
       `HELP.md` per contracts/README.md
 
 ---
@@ -61,17 +61,17 @@ testing of each story.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Create the profile-gated idempotent seeder scaffold in
+- [X] T005 Create the profile-gated idempotent seeder scaffold in
       `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` with `@Profile({"test","dev"})`,
       a transactional upsert helper keyed by natural key, and no-op behavior when the profile
       is inactive (depends on T001..T004)
-- [ ] T006 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/E2EConfig.java`
+- [X] T006 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/E2EConfig.java`
       resolving base URL (start-in-process vs `-De2e.base-url`), headless flag, browser engine,
       artifacts dir, and persona credentials from configuration
-- [ ] T007 [P] Create the harness in `src/test/java/com/allensandiego/adm/e2e/support/E2EBase.java`:
+- [X] T007 [P] Create the harness in `src/test/java/com/allensandiego/adm/e2e/support/E2EBase.java`:
       application start-or-connect, readiness polling with fail-fast message, per-scenario
       `BrowserContext`/`Page`, and teardown
-- [ ] T008 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/FailureArtifacts.java`
+- [X] T008 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/FailureArtifacts.java`
       capturing a Playwright trace and full-page screenshot on scenario failure under
       `target/e2e-artifacts/<scenario>/`
 
@@ -91,23 +91,23 @@ seeds nothing.
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Seed the 13-code permission catalog (all active) in
+- [X] T009 [US1] Seed the 13-code permission catalog (all active) in
       `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` per
       `contracts/seed-data.md`
-- [ ] T010 [US1] Seed the `Super Admin` (protected, all codes) and `Report Viewer` (3 view
+- [X] T010 [US1] Seed the `Super Admin` (protected, all codes) and `Report Viewer` (3 view
       codes) roles and their `role_permissions` mappings in
       `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`
-- [ ] T011 [US1] Seed the `e2e.admin`, `e2e.viewer`, and `e2e.inactive` personas with hashed
+- [X] T011 [US1] Seed the `e2e.admin`, `e2e.viewer`, and `e2e.inactive` personas with hashed
       passwords, statuses, and `user_roles` assignments in
       `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`
-- [ ] T012 [US1] Enforce idempotent reconciliation (create-if-missing, correct-if-drifted,
+- [X] T012 [US1] Enforce idempotent reconciliation (create-if-missing, correct-if-drifted,
       never delete unrelated rows) and profile confinement/off-by-default in
       `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`
-- [ ] T013 [P] [US1] Idempotency + confinement dataset test in
+- [X] T013 [P] [US1] Idempotency + confinement dataset test in
       `src/test/java/com/allensandiego/adm/config/TestDataSeederIT.java`: run the seeder twice,
       assert identical counts/values and zero duplicates (SC-003); assert no seed rows under the
       default profile (FR-004)
-- [ ] T014 [US1] Verify US1 independently: restart the app twice in the `test` profile and
+- [X] T014 [US1] Verify US1 independently: restart the app twice in the `test` profile and
       confirm the dataset is unchanged; record the observed baseline in
       `specs/003-seed-data-e2e-testing/notes.md`
 
@@ -129,24 +129,24 @@ without manual interaction.
 > Write these scenarios first; they must fail against a missing/incorrect app, then pass once
 > the application (features 001/002) and selectors are correct.
 
-- [ ] T015 [P] [US2] Implement sign-in scenarios E2E-AUTH-01/02/03 in
+- [X] T015 [P] [US2] Implement sign-in scenarios E2E-AUTH-01/02/03 in
       `src/test/java/com/allensandiego/adm/e2e/AuthE2ETest.java` per
       `contracts/e2e-scenarios.md`
-- [ ] T016 [P] [US2] Implement permission-journey scenarios E2E-PERM-01/02 in
+- [X] T016 [P] [US2] Implement permission-journey scenarios E2E-PERM-01/02 in
       `src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java`
-- [ ] T017 [US2] Implement role-journey and effective-permission scenarios E2E-ROLE-01 and
+- [X] T017 [US2] Implement role-journey and effective-permission scenarios E2E-ROLE-01 and
       E2E-EFF-01 in `src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java`
-- [ ] T018 [US2] Implement user-journey scenario E2E-USER-01 in
+- [X] T018 [US2] Implement user-journey scenario E2E-USER-01 in
       `src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Add `data-testid` anchors required by US2 to the CoreUI-based Thymeleaf
+- [X] T019 [US2] Add `data-testid` anchors required by US2 to the CoreUI-based Thymeleaf
       templates in `src/main/resources/templates/` (role/label locators first; testids only
       where no accessible anchor exists) per research D-5
-- [ ] T020 [US2] Run the US2 scenarios headless and stabilize locators/waits until green
+- [X] T020 [US2] Run the US2 scenarios headless and stabilize locators/waits until green
       (state-based waits only; no fixed sleeps) using `./mvnw verify -Dtest=...E2ETest`
-- [ ] T021 [US2] Verify US2 independently and record results in
+- [X] T021 [US2] Verify US2 independently and record results in
       `specs/003-seed-data-e2e-testing/notes.md`
 
 **Checkpoint**: Sign-in and core admin journeys verified end-to-end in a real browser.
@@ -164,19 +164,19 @@ blocked with no state change.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T022 [P] [US3] Implement allow/deny boundary scenarios E2E-DENY-01/02 and E2E-ALLOW-01 in
+- [X] T022 [P] [US3] Implement allow/deny boundary scenarios E2E-DENY-01/02 and E2E-ALLOW-01 in
       `src/test/java/com/allensandiego/adm/e2e/PermissionBoundaryE2ETest.java` per
       `contracts/e2e-scenarios.md`
-- [ ] T023 [US3] Implement lockout-guard scenarios E2E-LOCK-01/02/03 in
+- [X] T023 [US3] Implement lockout-guard scenarios E2E-LOCK-01/02/03 in
       `src/test/java/com/allensandiego/adm/e2e/PermissionBoundaryE2ETest.java`
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Add `data-testid` anchors for the "not authorized" page and lockout conflict
+- [X] T024 [US3] Add `data-testid` anchors for the "not authorized" page and lockout conflict
       warnings/toasts to `src/main/resources/templates/` as needed
-- [ ] T025 [US3] Run the US3 scenarios headless and stabilize until green (state-based waits
+- [X] T025 [US3] Run the US3 scenarios headless and stabilize until green (state-based waits
       only) using `./mvnw verify -Dtest=...E2ETest`
-- [ ] T026 [US3] Verify US3 independently and record results in
+- [X] T026 [US3] Verify US3 independently and record results in
       `specs/003-seed-data-e2e-testing/notes.md`
 
 **Checkpoint**: All permission boundaries and lockout guards proven end-to-end.
@@ -187,15 +187,15 @@ blocked with no state change.
 
 **Purpose**: Determinism, CI gating, and documentation across all stories
 
-- [ ] T027 [P] Add the repeat-run determinism check (20 consecutive suite runs, SC-005) and
+- [X] T027 [P] Add the repeat-run determinism check (20 consecutive suite runs, SC-005) and
       document the JUnit XML CI gate in `docs/` or `HELP.md`
-- [ ] T028 [P] Add a profile-safety test asserting a default/profile-less startup creates no
+- [X] T028 [P] Add a profile-safety test asserting a default/profile-less startup creates no
       seed rows in `src/test/java/com/allensandiego/adm/config/SeedProfileSafetyTest.java`
-- [ ] T029 [P] Update `HELP.md` / `README.md` with run instructions, profiles, and artifact
+- [X] T029 [P] Update `HELP.md` / `README.md` with run instructions, profiles, and artifact
       locations per `quickstart.md`
-- [ ] T030 Run the full `quickstart.md` validation end-to-end (`./mvnw verify` plus the manual
+- [X] T030 Run the full `quickstart.md` validation end-to-end (`./mvnw verify` plus the manual
       walkthrough) and record any gaps in `specs/003-seed-data-e2e-testing/notes.md`
-- [ ] T031 [P] Final review pass: no fixed sleeps, order-independent scenarios, no CoreUI CSS
+- [X] T031 [P] Final review pass: no fixed sleeps, order-independent scenarios, no CoreUI CSS
       class selectors, seeding disabled outside test/dev, no secrets committed
 
 ---

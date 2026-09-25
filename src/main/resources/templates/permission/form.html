@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>New Permission</title>
+</head>
+<body>
+<main>
+    <div class="card">
+        <div class="card-header">
+            <h2>Create Permission</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" th:object="${form}">
+                <div class="mb-3">
+                    <label for="code" class="form-label">Code</label>
+                    <input type="text" class="form-control" id="code" th:field="*{code}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="label" class="form-label">Label</label>
+                    <input type="text" class="form-control" id="label" th:field="*{label}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('label')}" th:errors="*{label}"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="/permissions" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

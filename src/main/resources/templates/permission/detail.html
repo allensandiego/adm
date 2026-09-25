@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Permission Detail</title>
+</head>
+<body>
+<main>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2>Permission Detail</h2>
+            <a href="/permissions" class="btn btn-secondary">Back to List</a>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Code</dt>
+                <dd class="col-sm-9" th:text="${permission.code}"></dd>
+                
+                <dt class="col-sm-3">Label</dt>
+                <dd class="col-sm-9" th:text="${permission.label}"></dd>
+                
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span th:class="${permission.active ? 'badge bg-success' : 'badge bg-danger'}" 
+                          th:text="${permission.active ? 'Active' : 'Inactive'}"></span>
+                </dd>
+                
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9" th:text="${#temporals.format(permission.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></dd>
+                
+                <dt class="col-sm-3">Updated At</dt>
+                <dd class="col-sm-9" th:text="${#temporals.format(permission.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></dd>
+            </dl>
+            
+            <form method="post" th:action="@{/permissions/{id}/edit(id=${permission.id})}">
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="active" name="active" 
+                           th:checked="${permission.active}">
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

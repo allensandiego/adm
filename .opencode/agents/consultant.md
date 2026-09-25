@@ -10,7 +10,8 @@ min_p: 0.0
 repeat_penalty: 1.0
 presence_penalty: 1.5
 reasoning:
-  effort: low
+  effort: medium
+reasoning_effort: medium
 stream: false
 permission:
   "*": deny

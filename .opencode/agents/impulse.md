@@ -3,7 +3,6 @@ name: impulse
 description: A testing sub-agent designed to catch bugs, verify code integrity, and ensure software quality before deployment.
 mode: subagent
 model: lmstudio/ornith-1.5-9b
-max_tokens: 131072
 temperature: 1.0
 top_p: 0.95
 top_k: 20

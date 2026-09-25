@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### OS & Build Artifacts ###
+nohup.out
+*.log
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+node_modules/
+e2e-screenshots/

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>User Detail</title>
+</head>
+<body>
+<main>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2>User Detail</h2>
+            <a href="/users" class="btn btn-secondary">Back to List</a>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Username</dt>
+                <dd class="col-sm-9" th:text="${user.username}"></dd>
+                
+                <dt class="col-sm-3">Display Name</dt>
+                <dd class="col-sm-9" th:text="${user.displayName}"></dd>
+                
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span th:class="${user.status.name() == 'ACTIVE' ? 'badge bg-success' : 'badge bg-danger'}" 
+                          th:text="${user.status.name()}"></span>
+                </dd>
+                
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss') : ''}"></dd>
+                
+                <dt class="col-sm-3">Updated At</dt>
+                <dd class="col-sm-9" th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm:ss') : ''}"></dd>
+            </dl>
+            
+            <form method="post" th:action="@{/users/{id}/edit(id=${user.id})}">
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="active" name="active" 
+                           th:checked="${user.status.name() == 'ACTIVE'}">
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+            
+            <hr>
+            
+            <h4>Assign Roles</h4>
+            <form method="post" th:action="@{/users/{id}/assign-roles(id=${user.id})}">
+                <div class="mb-3">
+                    <label class="form-label">Select Roles</label>
+                    <div class="form-check" th:each="role : ${roles}">
+                    <input class="form-check-input" type="checkbox" name="roleCodes" 
+                           th:value="${role.name}" th:id="'role-' + ${role.name}">
+                        <label class="form-check-label" th:for="'role-' + ${role.name}" th:text="${role.name}"></label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Assign</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

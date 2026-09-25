@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Home - ADM</title>
+</head>
+<body>
+<main>
+    <div class="card">
+        <div class="card-header">
+            <h2>Welcome to ADM</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead">Role-Based Access Control and User Management System</p>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Users</h5>
+                            <p class="card-text">Manage accounts, status, and role assignments.</p>
+                            <a href="/users" class="btn btn-primary">Go to Users</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-secondary">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Roles</h5>
+                            <p class="card-text">Manage roles and role-permission sets.</p>
+                            <a href="/roles" class="btn btn-secondary">Go to Roles</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Permissions</h5>
+                            <p class="card-text">Browse and edit the catalog of permissions.</p>
+                            <a href="/permissions" class="btn btn-info text-white">Go to Permissions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -41,16 +41,16 @@ testing of each story.
 
 **Purpose**: Build dependencies and configuration for the auth surface
 
-- [ ] T001 Verify and extend `pom.xml` for the auth surface: ensure
+- [X] T001 Verify and extend `pom.xml` for the auth surface: ensure
       `spring-boot-starter-web`, `spring-boot-starter-thymeleaf`,
       `spring-boot-starter-validation`, `com.h2database:h2` (runtime), and
       `spring-boot-starter-test` (test) are present alongside `spring-boot-starter-security`
       and `spring-boot-starter-data-jdbc`; keep `spring-boot-starter-security-test` (test)
-- [ ] T002 [P] Configure `src/main/resources/application.properties`: embedded H2 datasource,
+- [X] T002 [P] Configure `src/main/resources/application.properties`: embedded H2 datasource,
       `spring.jpa.hibernate.ddl-auto=update`, `spring.jpa.open-in-view=false`, UTC timezone,
       `server.port=8080`, and logging that never emits credentials (auth loggers at INFO, no
       request-body logging)
-- [ ] T003 [P] Create the package skeleton directories `config/`, `domain/`, `security/`,
+- [X] T003 [P] Create the package skeleton directories `config/`, `domain/`, `security/`,
       `service/`, `web/` under `src/main/java/com/allensandiego/adm/` and `security/`,
       `service/` under `src/test/java/com/allensandiego/adm/`
 
@@ -62,22 +62,22 @@ testing of each story.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Add the nullable `passwordHash` field to the feature-001 `User` entity in
+- [X] T004 [P] Add the nullable `passwordHash` field to the feature-001 `User` entity in
       `src/main/java/com/allensandiego/adm/domain/User.java` — stores `{id}encoded`
       credential strings (e.g. `{bcrypt}$2a$...`), never plaintext (FR-005)
-- [ ] T005 [P] Create the `AuthOutcome` enum (`SUCCESS`, `FAILURE`, `SIGNOUT`) in
+- [X] T005 [P] Create the `AuthOutcome` enum (`SUCCESS`, `FAILURE`, `SIGNOUT`) in
       `src/main/java/com/allensandiego/adm/domain/AuthOutcome.java`
-- [ ] T006 Create the `AuthEvent` JPA entity in
+- [X] T006 Create the `AuthEvent` JPA entity in
       `src/main/java/com/allensandiego/adm/domain/AuthEvent.java` per `data-model.md`: UUID
       id, `username`, nullable `account_id` FK -> `User`, `outcome`, `occurred_at` (UTC) —
       depends on T005
-- [ ] T007 Create `AuthEventRepository` in
+- [X] T007 Create `AuthEventRepository` in
       `src/main/java/com/allensandiego/adm/domain/AuthEventRepository.java`
       (`JpaRepository<AuthEvent, UUID>` plus lookups by `outcome`/`username`) — depends on T006
-- [ ] T008 [P] Create the `PasswordEncoder` bean in
+- [X] T008 [P] Create the `PasswordEncoder` bean in
       `src/main/java/com/allensandiego/adm/config/PasswordEncoderConfig.java` using
       `PasswordEncoderFactories.createDelegatingPasswordEncoder()` (research D-2)
-- [ ] T009 Implement `AuthEventService` in
+- [X] T009 Implement `AuthEventService` in
       `src/main/java/com/allensandiego/adm/service/AuthEventService.java` exposing
       `record(String username, UUID accountId, AuthOutcome outcome)` that appends an
       `AuthEvent` with `Instant.now()` in UTC and never accepts credential material (FR-013) —
@@ -98,41 +98,41 @@ credentials → `/login?error` with one generic message.
 
 ### Tests for User Story 1 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [ ] T010 [P] [US1] Login flow tests in
+- [X] T010 [P] [US1] Login flow tests in
       `src/test/java/com/allensandiego/adm/security/LoginFlowTests.java`: anonymous GET on a
       protected URL → 302 `/login`; anonymous GET `/login` → 200; POST valid active
       credentials → 302 to the saved request or `/`; the session id changes after login;
       wrong password and unknown username → 302 `/login?error` with a single generic message;
       empty username/password → the same generic error (`contracts/authentication.md`)
-- [ ] T011 [P] [US1] Dual-sided authorization tests in
+- [X] T011 [P] [US1] Dual-sided authorization tests in
       `src/test/java/com/allensandiego/adm/security/AuthorizationBoundaryTests.java`:
       anonymous → 302 `/login`; authenticated with the required permission → 200;
       authenticated without it → 403 (constitution Principle IV)
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Create `JdbcUserDetailsServiceConfig` in
+- [X] T012 [US1] Create `JdbcUserDetailsServiceConfig` in
       `src/main/java/com/allensandiego/adm/security/JdbcUserDetailsServiceConfig.java`: a
       `JdbcUserDetailsManager` bean with `usersByUsernameQuery` returning
       `(username, password_hash, enabled)` where `enabled = (status='ACTIVE')` and matched via
       `LOWER(username)=LOWER(?)`, and an `authoritiesByUsernameQuery` returning role names via
       `user_roles` -> `roles`; call `setUsernameBasedPrimaryKey(false)` (D-1/D-7)
-- [ ] T013 [US1] Create `AuthenticationProviderConfig` in
+- [X] T013 [US1] Create `AuthenticationProviderConfig` in
       `src/main/java/com/allensandiego/adm/security/AuthenticationProviderConfig.java`: a
       `DaoAuthenticationProvider` bean wired to the JDBC `UserDetailsService` (T012), the
       `PasswordEncoder` (T008), and `UserDetailsPasswordService` for lazy re-hash; keep
       `hideUserNotFoundExceptions=true` (D-2)
-- [ ] T014 [US1] Implement `AuthEventSuccessHandler` in
+- [X] T014 [US1] Implement `AuthEventSuccessHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthEventSuccessHandler.java` as a
       `SavedRequestAwareAuthenticationSuccessHandler` subclass: record `SUCCESS` via
       `AuthEventService`, reset the throttle window when present (US3 hook), then delegate to
       the default SavedRequest replay / home redirect (FR-007/FR-013)
-- [ ] T015 [US1] Implement `AuthEventFailureHandler` in
+- [X] T015 [US1] Implement `AuthEventFailureHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthEventFailureHandler.java`: record
       `FAILURE` using `ex.getAuthenticationRequest().getName()` (fallback
       `request.getParameter("username")`), redirect `/login?error`, and never log or store the
       submitted password (D-6/FR-013)
-- [ ] T016 [US1] Create `SecurityConfig` in
+- [X] T016 [US1] Create `SecurityConfig` in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`: a
       `SecurityFilterChain` bean with `permitAll` for `/login`, `/css/**`, `/js/**`,
       `/assets/**`, `/error`; `formLogin` (`loginPage("/login")`,
@@ -140,12 +140,12 @@ credentials → `/login?error` with one generic message.
       `failureUrl("/login?error")`); `sessionManagement` default `changeSessionId`; default
       `csrf`; and `authorizeHttpRequests` deny-by-default
       `.anyRequest().access(<feature-001 AuthorizationManager>)` (FR-001/FR-007/FR-008/FR-010)
-- [ ] T017 [US1] Create the CoreUI sign-in view
+- [X] T017 [US1] Create the CoreUI sign-in view
       `src/main/resources/templates/login.html`: POST `/login` with a CSRF hidden field,
       username/password inputs, a single generic error block bound to `?error`, a sign-out
       notice bound to `?logout`, and assets referenced from `/assets/**` or `/css/**`
       (FR-001/FR-003)
-- [ ] T018 [US1] Create `LoginController` in
+- [X] T018 [US1] Create `LoginController` in
       `src/main/java/com/allensandiego/adm/web/LoginController.java`: GET `/login` renders
       `login` for anonymous users and redirects authenticated users to `/`; GET `/` renders
       the feature-001 home page (FR-011)
@@ -163,23 +163,23 @@ credentials → `/login?error` with one generic message.
 
 ### Tests for User Story 2 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [ ] T019 [P] [US2] Sign-out tests in
+- [X] T019 [P] [US2] Sign-out tests in
       `src/test/java/com/allensandiego/adm/security/LogoutTests.java`: signed-in POST
       `/logout` → 302 `/login?logout`; a later protected GET → 302 `/login`; an
       `AUTH_SIGNOUT` event is persisted (FR-009/SC-005)
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Implement `AuthEventLogoutHandler` in
+- [X] T020 [US2] Implement `AuthEventLogoutHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthEventLogoutHandler.java`
       implementing `LogoutHandler`: record `SIGNOUT` via `AuthEventService` using the passed
       `Authentication` parameter (not the security context holder)
-- [ ] T021 [US2] Register sign-out in
+- [X] T021 [US2] Register sign-out in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`:
       `.logout(l -> l.logoutUrl("/logout").addLogoutHandler(authEventLogoutHandler)
       .logoutSuccessUrl("/login?logout").invalidateHttpSession(true)
       .clearAuthentication(true))` — depends on T016
-- [ ] T022 [US2] Add a CSRF-protected sign-out form (POST `/logout`) to the shared
+- [X] T022 [US2] Add a CSRF-protected sign-out form (POST `/logout`) to the shared
       authenticated layout/header fragment in `src/main/resources/templates/fragments/`
       created by feature 001
 
@@ -197,48 +197,48 @@ password → refused; make five failed attempts → further attempts are throttl
 
 ### Tests for User Story 3 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [ ] T023 [P] [US3] Deactivation refusal tests in
+- [X] T023 [P] [US3] Deactivation refusal tests in
       `src/test/java/com/allensandiego/adm/security/DeactivationRefusalTests.java`: correct
       password on an `INACTIVE` account → 302 `/login?error`; a user deactivated mid-session
       loses access on the next request with no protected content (FR-004/SC-003/SC-006)
-- [ ] T024 [P] [US3] Throttle tests in
+- [X] T024 [P] [US3] Throttle tests in
       `src/test/java/com/allensandiego/adm/security/ThrottleTests.java`: five failures within
       the window cause subsequent attempts to be refused with the generic message; an unknown
       username is throttled identically (no existence disclosure); a successful sign-in
       clears the counter (FR-012/SC-007)
-- [ ] T025 [P] [US3] Unverifiable-credential tests in
+- [X] T025 [P] [US3] Unverifiable-credential tests in
       `src/test/java/com/allensandiego/adm/security/UnverifiableCredentialTests.java`: a
       null/empty/dummy stored hash is refused generically with no exception leak or crash
       (FR-004/FR-014)
-- [ ] T026 [P] [US3] Auth-event audit tests in
+- [X] T026 [P] [US3] Auth-event audit tests in
       `src/test/java/com/allensandiego/adm/security/AuthEventAuditTests.java`: `SUCCESS`,
       `FAILURE`, and `SIGNOUT` rows are recorded with username, UTC timestamp, and outcome,
       and contain no password or hash (FR-013/SC-008)
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Implement `LoginAttemptRegistry` in
+- [X] T027 [US3] Implement `LoginAttemptRegistry` in
       `src/main/java/com/allensandiego/adm/service/LoginAttemptRegistry.java`: a
       `ConcurrentHashMap` sliding-window registry (5 failures / 15 minutes → 15-minute block)
       keyed by normalized username with `isBlocked`, `recordFailure`, and `reset` (D-3)
-- [ ] T028 [US3] Implement `ThrottledAuthenticationProvider` in
+- [X] T028 [US3] Implement `ThrottledAuthenticationProvider` in
       `src/main/java/com/allensandiego/adm/security/ThrottledAuthenticationProvider.java`:
       check `registry.isBlocked(normalizedUsername)` BEFORE delegating and throw a generic
       `BadCredentialsException` when blocked; on failure call `recordFailure`, on success call
       `reset` — depends on T013, T027
-- [ ] T029 [US3] Register `ThrottledAuthenticationProvider` in
+- [X] T029 [US3] Register `ThrottledAuthenticationProvider` in
       `src/main/java/com/allensandiego/adm/security/AuthenticationProviderConfig.java` so the
       throttle wraps the JDBC provider — depends on T013, T028
-- [ ] T030 [US3] Extend `src/main/java/com/allensandiego/adm/security/AuthEventFailureHandler.java`
+- [X] T030 [US3] Extend `src/main/java/com/allensandiego/adm/security/AuthEventFailureHandler.java`
       to map `DisabledException`, `LockedException`, `BadCredentialsException`, and
       empty-credential failures to the single generic `/login?error` message and a `FAILURE`
       event (FR-003/FR-004) — depends on T015
-- [ ] T031 [US3] Implement `CredentialService` in
+- [X] T031 [US3] Implement `CredentialService` in
       `src/main/java/com/allensandiego/adm/service/CredentialService.java`: encode plaintext
       through the `PasswordEncoder` into `{id}hash`, and store a dummy `{bcrypt}` hash of
       random bytes when a credential is missing/unverifiable so matches fail without crashing
       or leaking timing (D-2/FR-014)
-- [ ] T032 [US3] Add generic auth-error safety in
+- [X] T032 [US3] Add generic auth-error safety in
       `src/main/java/com/allensandiego/adm/web/AuthErrorHandler.java` (or extend feature 001's
       `GlobalExceptionHandler`): authentication or credential-storage errors resolve to a
       generic response/redirect and never disclose internal details (FR-014)
@@ -251,21 +251,21 @@ password → refused; make five failed attempts → further attempts are throttl
 
 **Purpose**: Hardening, unit coverage, and end-to-end validation
 
-- [ ] T033 [P] Add password-encoding unit tests in
+- [X] T033 [P] Add password-encoding unit tests in
       `src/test/java/com/allensandiego/adm/service/PasswordEncodingTests.java`: encoded values
       carry the `{bcrypt}` prefix, verify accepts/rejects correctly, the dummy hash never
       matches, and `upgradeEncoding` reports stale schemes
-- [ ] T034 [P] Add `LoginAttemptRegistryTests` in
+- [X] T034 [P] Add `LoginAttemptRegistryTests` in
       `src/test/java/com/allensandiego/adm/service/LoginAttemptRegistryTests.java`: threshold
       boundary, window expiry, reset-on-success, and identical behavior for known/unknown
       usernames
-- [ ] T035 [P] Security hardening: in `src/main/resources/application.properties` and
+- [X] T035 [P] Security hardening: in `src/main/resources/application.properties` and
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java` ensure credentials
       are never logged, CSRF is enabled for login/logout, and authenticated responses send
       `Cache-Control: no-store` (FR-005/FR-013)
-- [ ] T036 [P] Update documentation: `HELP.md` and the run commands in
+- [X] T036 [P] Update documentation: `HELP.md` and the run commands in
       `specs/002-jdbc-user-authentication/quickstart.md` if they changed
-- [ ] T037 Run `./mvnw test` and execute the
+- [X] T037 Run `./mvnw test` and execute the
       `specs/002-jdbc-user-authentication/quickstart.md` smoke scenarios; resolve failures so
       SC-001..SC-008 all pass
 

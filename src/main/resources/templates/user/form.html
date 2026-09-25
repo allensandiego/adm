@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>New User</title>
+</head>
+<body>
+<main>
+    <div class="card">
+        <div class="card-header">
+            <h2>Create User</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" th:object="${form}">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" th:field="*{username}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="displayName" class="form-label">Display Name</label>
+                    <input type="text" class="form-control" id="displayName" th:field="*{displayName}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="activate" name="activate" 
+                           th:field="*{activate}" checked>
+                    <label class="form-check-label" for="activate">Activate</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="/users" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

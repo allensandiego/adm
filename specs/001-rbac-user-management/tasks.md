@@ -34,16 +34,16 @@ testing of each story.
 
 **Purpose**: Project initialization and buildable skeleton
 
-- [ ] T001 Create Maven project at repository root (`pom.xml`) for Java 17 with Spring Boot
-      3.x starters: web, security, thymeleaf, data-jpa, validation; plus H2 runtime
-      dependency and spring-boot-starter-test + spring-security-test (test scope)
-- [ ] T002 [P] Create `src/main/resources/application.yml`: embedded H2 datasource,
-      `spring.jpa.hibernate.ddl-auto=update` (Hibernate-managed schema per constitution
-      III), `spring.jpa.open-in-view=false`, UTC timezone, server port 8080, and
-      `app.seed.admin-password` placeholder
-- [ ] T003 [P] Vendor the CoreUI Admin Bootstrap 5 template assets (CSS/JS/images) under
-      `src/main/resources/static/assets/` with a documented provenance note in
-      `src/main/resources/static/assets/README.md`
+- [X] T001 Create Maven project at repository root (`pom.xml`) for Java 17 with Spring Boot
+       3.x starters: web, security, thymeleaf, data-jpa, validation; plus H2 runtime
+       dependency and spring-boot-starter-test + spring-security-test (test scope)
+- [X] T002 [P] Create `src/main/resources/application.yml`: embedded H2 datasource,
+       `spring.jpa.hibernate.ddl-auto=update` (Hibernate-managed schema per constitution
+       III), `spring.jpa.open-in-view=false`, UTC timezone, server port 8080, and
+       `app.seed.admin-password` placeholder
+- [X] T003 [P] Vendor the CoreUI Admin Bootstrap 5 template assets (CSS/JS/images) under
+       `src/main/resources/static/assets/` with a documented provenance note in
+       `src/main/resources/static/assets/README.md`
 
 ---
 
@@ -54,42 +54,42 @@ implemented
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create entities exactly per `data-model.md`: `User`, `Role`, `Permission`,
-      `RolePermission`, `UserRole`, `AuditEvent` in `src/main/java/com/example/rbac/domain/`
-      (UUID PKs, UTC timestamps, composite keys `(role_id, permission_id)` /
-      `(user_id, role_id)`, cascade rules, optimistic `version` on Role/User)
-- [ ] T005 [P] Create Spring Data repositories for all six entities in
-      `src/main/java/com/example/rbac/domain/` (interfaces, incl. uniqueness queries)
-- [ ] T006 [P] Create centralized permission catalog constants class
-      `src/main/java/com/example/rbac/security/Permissions.java` with every code from
-      `contracts/README.md` (no magic strings — constitution Security Implementation
-      Standards)
-- [ ] T007 Create `PermissionResolver` resolving effective permissions
-      (User-Roles -> Roles -> Permissions, active only, active-user only) in
-      `src/main/java/com/example/rbac/security/PermissionResolver.java` per D-1/research.md
-- [ ] T008 Create Spring Security configuration
-      `src/main/java/com/example/rbac/security/SecurityConfig.java`: deny-by-default
-      (`authorizeHttpRequests` whitelisting only `/login`, `/css/**`, `/js/**`,
-      `/assets/**`, `/error`), form-login, `AuthorizationManager` delegating to
-      PermissionResolver BEFORE controller dispatch, and exposing resolved permissions to
-      Thymeleaf request attributes (contracts/README.md security conventions)
-- [ ] T009 Create `UserPrincipalService` in
-      `src/main/java/com/example/rbac/security/UserPrincipalService.java` loading users by
-      username (with ACTIVE check) and BCrypt password encoding, plus the `/login`
-      Thymeleaf template in `src/main/resources/templates/login.html`
-- [ ] T010 [P] Create `AuditService` in `src/main/java/com/example/rbac/service/AuditService.java`
-      appending `audit_event` rows (actor, action, target type/id, before/after, UTC
-      timestamp) per FR-014/data-model.md
-- [ ] T011 [P] Create `GlobalExceptionHandler` in
-      `src/main/java/com/example/rbac/web/GlobalExceptionHandler.java` mapping 403 (not
-      authorized), 400 (validation), 404, and 409 (conflict) to error templates in
-      `src/main/resources/templates/error/`
-- [ ] T012 [P] Create the CoreUI-backed base layout and permission-driven sidebar fragment
-      in `src/main/resources/templates/fragments/` rendering menu/action links only for
-      granted permissions (D-2, server-side source of truth)
-- [ ] T013 Create idempotent `DataSeeder` in `src/main/java/com/example/rbac/config/DataSeeder.java`:
-      all permission catalog rows, protected "Super Admin" role (`isProtected=true`) with all
-      permissions, and one seeded administrator user (`app.seed.admin-password`)
+- [X] T004 [P] Create entities exactly per `data-model.md`: `User`, `Role`, `Permission`,
+       `RolePermission`, `UserRole`, `AuditEvent` in `src/main/java/com/example/rbac/domain/`
+       (UUID PKs, UTC timestamps, composite keys `(role_id, permission_id)` /
+       `(user_id, role_id)`, cascade rules, optimistic `version` on Role/User)
+- [X] T005 [P] Create Spring Data repositories for all six entities in
+       `src/main/java/com/example/rbac/domain/` (interfaces, incl. uniqueness queries)
+- [X] T006 [P] Create centralized permission catalog constants class
+       `src/main/java/com/example/rbac/security/Permissions.java` with every code from
+       `contracts/README.md` (no magic strings — constitution Security Implementation
+       Standards)
+- [X] T007 Create `PermissionResolver` resolving effective permissions
+       (User-Roles -> Roles -> Permissions, active only, active-user only) in
+       `src/main/java/com/example/rbac/security/PermissionResolver.java` per D-1/research.md
+- [X] T008 Create Spring Security configuration
+       `src/main/java/com/example/rbac/security/SecurityConfig.java`: deny-by-default
+       (`authorizeHttpRequests` whitelisting only `/login`, `/css/**`, `/js/**`,
+       `/assets/**`, `/error`), form-login, `AuthorizationManager` delegating to
+       PermissionResolver BEFORE controller dispatch, and exposing resolved permissions to
+       Thymeleaf request attributes (contracts/README.md security conventions)
+- [X] T009 Create `UserPrincipalService` in
+       `src/main/java/com/example/rbac/security/UserPrincipalService.java` loading users by
+       username (with ACTIVE check) and BCrypt password encoding, plus the `/login`
+       Thymeleaf template in `src/main/resources/templates/login.html`
+- [X] T010 [P] Create `AuditService` in `src/main/java/com/example/rbac/service/AuditService.java`
+       appending `audit_event` rows (actor, action, target type/id, before/after, UTC
+       timestamp) per FR-014/data-model.md
+- [X] T011 [P] Create `GlobalExceptionHandler` in
+       `src/main/java/com/example/rbac/web/GlobalExceptionHandler.java` mapping 403 (not
+       authorized), 400 (validation), 404, and 409 (conflict) to error templates in
+       `src/main/resources/templates/error/`
+- [X] T012 [P] Create the CoreUI-backed base layout and permission-driven sidebar fragment
+       in `src/main/resources/templates/fragments/` rendering menu/action links only for
+       granted permissions (D-2, server-side source of truth)
+- [X] T013 Create idempotent `DataSeeder` in `src/main/java/com/example/rbac/config/DataSeeder.java`:
+       all permission catalog rows, protected "Super Admin" role (`isProtected=true`) with all
+       permissions, and one seeded administrator user (`app.seed.admin-password`)
 
 **Checkpoint**: Foundation ready — security pipeline, schema, seed data all present.
 User story implementation can now begin.
@@ -106,28 +106,28 @@ sign in as a user with every code except them — 403 on all permission screens.
 
 ### Tests for User Story 1 (write FIRST, ensure they FAIL before implementation)
 
-- [ ] T014 [P] [US1] Dual-sided authorization tests in
-      `src/test/java/com/allensandiego/adm/security/PermissionAuthorizationTest.java` covering
-      every GET/POST in `contracts/permissions.md`: granted role → 200, denied role → 403
-- [ ] T015 [P] [US1] Service tests in `src/test/java/com/allensandiego/adm/service/PermissionServiceTest.java`:
-      unique code enforcement, blank/invalid code rejection, deactivate prevents new grants,
-      reactivate restores availability (FR-002/FR-003/FR-012)
+- [X] T014 [P] [US1] Dual-sided authorization tests in
+       `src/test/java/com/allensandiego/adm/security/PermissionAuthorizationTest.java` covering
+       every GET/POST in `contracts/permissions.md`: granted role → 200, denied role → 403
+- [X] T015 [P] [US1] Service tests in `src/test/java/com/allensandiego/adm/service/PermissionServiceTest.java`:
+       unique code enforcement, blank/invalid code rejection, deactivate prevents new grants,
+       reactivate restores availability (FR-002/FR-003/FR-012)
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] Implement `PermissionService` in
-      `src/main/java/com/allensandiego/adm/service/PermissionService.java` (CRUD, activate/
-      deactivate, uniqueness, active-only grants) — depends on T004–T006, T010
-- [ ] T017 [P] [US1] Implement `PermissionController` in
-      `src/main/java/com/allensandiego/adm/web/PermissionController.java` (list w/ paging+search,
-      new, detail, edit) per `contracts/permissions.md`
-- [ ] T018 [P] [US1] Create Permission Thymeleaf templates (list, new, detail, edit) in
-      `src/main/resources/templates/permission/`
-- [ ] T019 [US1] Wire audit logging for permission mutations through `AuditService`
-      (create, edit, deactivate, reactivate) with before/after values
-- [ ] T020 [US1] Verify full permission story: run
-      `src/test/java/com/allensandiego/adm/security/PermissionAuthorizationTest.java` and
-      `PermissionServiceTest.java` green; manual pass of Quickstart steps 1 and 6
+- [X] T016 [US1] Implement `PermissionService` in
+       `src/main/java/com/allensandiego/adm/service/PermissionService.java` (CRUD, activate/
+       deactivate, uniqueness, active-only grants) — depends on T004–T006, T010
+- [X] T017 [P] [US1] Implement `PermissionController` in
+       `src/main/java/com/allensandiego/adm/web/PermissionController.java` (list w/ paging+search,
+       new, detail, edit) per `contracts/permissions.md`
+- [X] T018 [P] [US1] Create Permission Thymeleaf templates (list, new, detail, edit) in
+       `src/main/resources/templates/permission/`
+- [X] T019 [US1] Wire audit logging for permission mutations through `AuditService`
+       (create, edit, deactivate, reactivate) with before/after values
+- [X] T020 [US1] Verify full permission story: run
+       `src/test/java/com/allensandiego/adm/security/PermissionAuthorizationTest.java` and
+       `PermissionServiceTest.java` green; manual pass of Quickstart steps 1 and 6
 
 **Checkpoint**: Permission catalog fully functional and independently testable — MVP.
 
@@ -144,34 +144,34 @@ editor; deleting/skipping the final protected role is refused with 409.
 
 ### Tests for User Story 2 (write FIRST, ensure they FAIL before implementation)
 
-- [ ] T021 [P] [US2] Dual-sided authorization tests in
-      `src/test/java/com/example/rbac/security/RoleAuthorizationTest.java` covering every
-      GET/POST in `contracts/roles.md` (incl. `role.permissions.edit` and `role.delete`)
-- [ ] T022 [ ] [US2] Guardrail + concurrency tests in
-      `src/test/java/com/example/rbac/guardrails/RoleGuardrailTest.java`: G1 (delete last
-      protected role → 409, no change), optimistic-lock conflict (second save → 409)
-      (FR-010/FR-013)
-- [ ] T023 [P] [US2] Service tests in `src/test/java/com/example/rbac/service/RoleServiceTest.java`:
-      role CRUD, permission-set replacement exactness, active-only grant enforcement, G1
+- [X] T021 [P] [US2] Dual-sided authorization tests in
+       `src/test/java/com/example/rbac/security/RoleAuthorizationTest.java` covering every
+       GET/POST in `contracts/roles.md` (incl. `role.permissions.edit` and `role.delete`)
+- [X] T022 [ ] [US2] Guardrail + concurrency tests in
+       `src/test/java/com/example/rbac/guardrails/RoleGuardrailTest.java`: G1 (delete last
+       protected role → 409, no change), optimistic-lock conflict (second save → 409)
+       (FR-010/FR-013)
+- [X] T023 [P] [US2] Service tests in `src/test/java/com/allensandiego/adm/service/RoleServiceTest.java`:
+       role CRUD, permission-set replacement exactness, active-only grant enforcement, G1
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Implement `RoleService` in
-      `src/main/java/com/allensandiego/adm/service/RoleService.java` (CRUD, `savePermissionSet`
-      full-replace semantics, G1 guardrail calling PermissionResolver, optimistic locking) —
-      depends on T004–T010
-- [ ] T025 [P] [US2] Implement `RoleController` in
-      `src/main/java/com/example/rbac/web/RoleController.java` including the role-permission
-      editor (list w/ paging+search, new, detail, edit, permissions, delete) per
-      `contracts/roles.md`
-- [ ] T026 [P] [US2] Create Role Thymeleaf templates (list, new, detail, edit,
-      permissions-editor with live checkboxes, inactive permissions read-only) in
-      `src/main/resources/templates/role/` — matched controller model attributes:
-      roles (List<Role>), totalPages, currentPage, searchTerm, size (list.html); role (Role)
-      (new/detail/edit/permissions.html); permissions (PageResult<Permission>) (permissions.html)
-      RoleServiceTest green; manual pass of Quickstart steps 2 and 5 (Super Admin refusal)
-- [ ] T027 [US2] Wire audit logging for role create/rename/delete and permission-set saves through AuditService in src/main/java/com/allensandiego/adm/service/RoleService.java
-- [ ] T028 [US2] Verify role story: run RoleAuthorizationTest, RoleGuardrailTest, RoleServiceTest green; manual pass of Quickstart steps 2 and 5
+- [X] T024 [US2] Implement `RoleService` in
+       `src/main/java/com/allensandiego/adm/service/RoleService.java` (CRUD, `savePermissionSet`
+       full-replace semantics, G1 guardrail calling PermissionResolver, optimistic locking) —
+       depends on T004–T010
+- [X] T025 [P] [US2] Implement `RoleController` in
+       `src/main/java/com/example/rbac/web/RoleController.java` including the role-permission
+       editor (list w/ paging+search, new, detail, edit, permissions, delete) per
+       `contracts/roles.md`
+- [X] T026 [P] [US2] Create Role Thymeleaf templates (list, new, detail, edit,
+       permissions-editor with live checkboxes, inactive permissions read-only) in
+       `src/main/resources/templates/role/` — matched controller model attributes:
+       roles (List<Role>), totalPages, currentPage, searchTerm, size (list.html); role (Role)
+       (new/detail/edit/permissions.html); permissions (PageResult<Permission>) (permissions.html)
+       RoleServiceTest green; manual pass of Quickstart steps 2 and 5 (Super Admin refusal)
+- [X] T027 [US2] Wire audit logging for role create/rename/delete and permission-set saves through AuditService in src/main/java/com/allensandiego/adm/service/RoleService.java
+- [X] T028 [US2] Verify role story: run RoleAuthorizationTest, RoleGuardrailTest, RoleServiceTest green; manual pass of Quickstart steps 2 and 5
 
 **Checkpoint**: Roles and role-permission editing functional; builds on US1.
 
@@ -189,33 +189,33 @@ get 403 everywhere.
 
 ### Tests for User Story 3 (write FIRST, ensure they FAIL before implementation)
 
-- [ ] T029 [P] [US3] Dual-sided authorization tests in
-      `src/test/java/com/example/rbac/security/UserAuthorizationTest.java` covering every
-      GET/POST in `contracts/users.md` (incl. `user.roles.assign`, `user.activate`)
-- [ ] T030 [P] [US3] Guardrail + effective-permission tests in
-      `src/test/java/com/example/rbac/guardrails/UserGuardrailTest.java`: G2 (remove last
-      protected-role assignment → 409), G3 (deactivate final admin → 409), deactivated user
-      → empty permission set, effective set == exact union of active permissions of assigned
-      roles (FR-010/FR-008/SC-005)
-- [ ] T031 [P] [US3] Service tests in `src/test/java/com/example/rbac/service/UserServiceTest.java`:
-      user CRUD, unique username, activate/deactivate transitions, single-assignment rule
+- [X] T029 [P] [US3] Dual-sided authorization tests in
+       `src/test/java/com/example/rbac/security/UserAuthorizationTest.java` covering every
+       GET/POST in `contracts/users.md` (incl. `user.roles.assign`, `user.activate`)
+- [X] T030 [P] [US3] Guardrail + effective-permission tests in
+       `src/test/java/com/allensandiego/adm/security/UserGuardrailTest.java`: G2 (remove last
+       protected-role assignment → 409), G3 (deactivate final admin → 409), deactivated user
+       → empty permission set, effective set == exact union of active permissions of assigned
+       roles (FR-010/FR-008/SC-005)
+- [X] T031 [P] [US3] Service tests in `src/test/java/com/allensandiego/adm/service/UserServiceTest.java`:
+       user CRUD, unique username, activate/deactivate transitions, single-assignment rule
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Implement `UserService` in
-      `src/main/java/com/allensandiego/adm/service/UserService.java` (CRUD, status transitions,
-      `assignRoles` full-replace, effective-permission lookup via PermissionResolver,
-      G2/G3 guardrails, optimistic locking) — depends on T004–T010
-- [ ] T033 [P] [US3] Implement `UserController` in
-        `src/main/java/com/allensandiego/adm/web/UserController.java` (list w/ paging+search, new,
-        detail, edit, status, roles) per `contracts/users.md`
-- [ ] T034 [P] [US3] Create User Thymeleaf templates (list, new, detail with effective
-      permissions panel, edit, role-assignment multi-select) in
-      `src/main/resources/templates/user/`
-- [ ] T035 [US3] Wire audit logging for user create/edit/status and role-assignment changes
-      through `AuditService`
-- [ ] T036 [US3] Verify user story: run UserAuthorizationTest, UserGuardrailTest,
-      UserServiceTest green; manual pass of Quickstart steps 3 and 4 (self-service 403 demo)
+- [X] T032 [US3] Implement `UserService` in
+       `src/main/java/com/allensandiego/adm/service/UserService.java` (CRUD, status transitions,
+       `assignRoles` full-replace, effective-permission lookup via PermissionResolver,
+       G2/G3 guardrails, optimistic locking) — depends on T004–T010
+- [X] T033 [P] [US3] Implement `UserController` in
+         `src/main/java/com/allensandiego/adm/web/UserController.java` (list w/ paging+search, new,
+         detail, edit, status, roles) per `contracts/users.md`
+- [X] T034 [P] [US3] Create User Thymeleaf templates (list, new, detail with effective
+       permissions panel, edit, role-assignment multi-select) in
+       `src/main/resources/templates/user/`
+- [X] T035 [US3] Wire audit logging for user create/edit/status and role-assignment changes
+       through `AuditService`
+- [X] T036 [US3] Verify user story: run UserAuthorizationTest, UserGuardrailTest,
+       UserServiceTest green; manual pass of Quickstart steps 3 and 4 (self-service 403 demo)
 
 **Checkpoint**: All user stories functional; full RBAC loop demonstrable end-to-end.
 
@@ -225,17 +225,17 @@ get 403 everywhere.
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T037 [P] Fail-closed suite in `src/test/java/com/example/rbac/security/FailClosedTest.java`:
-      unauthenticated access to all non-whitelisted paths → 401/login redirect; deactivated
-      user → 403 on every protected path (SC-003, constitution Pr. II/IV)
-- [ ] T038 [P] Audit completeness test in `src/test/java/com/example/rbac/audit/AuditTest.java`:
-      every mutation writes an `audit_event` with actor, UTC timestamp, before/after (SC-006)
-- [ ] T039 [P] Update repository `README.md` with run instructions and deferred
-      `TODO(PRODUCTION_DATABASE)` note from constitution v2.0.0
-- [ ] T040 Run the full `quickstart.md` validation end-to-end (automated `mvn test` + manual
-      walkthrough); record any gaps in `specs/001-rbac-user-management/notes.md`
-- [ ] T041 [P] Final code review pass: no magic permission strings, no validation bypass,
-      all endpoints behind the security layer; clean up TODOs
+- [X] T037 [P] Fail-closed suite in `src/test/java/com/allensandiego/adm/security/FailClosedTest.java`:
+       unauthenticated access to all non-whitelisted paths → 401/login redirect; deactivated
+       user → 403 on every protected path (SC-003, constitution Pr. II/IV)
+- [X] T038 [P] Audit completeness test in `src/test/java/com/allensandiego/adm/service/AuditTest.java`:
+       every mutation writes an `audit_event` with actor, UTC timestamp, before/after (SC-006)
+- [X] T039 [P] Update repository `README.md` with run instructions and deferred
+       `TODO(PRODUCTION_DATABASE)` note from constitution v2.0.0
+- [X] T040 Run the full `quickstart.md` validation end-to-end (automated `mvn test` + manual
+       walkthrough); record any gaps in `specs/001-rbac-user-management/notes.md`
+- [X] T041 [P] Final code review pass: no magic permission strings, no validation bypass,
+       all endpoints behind the security layer; clean up TODOs
 
 ---
 

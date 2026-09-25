@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header" class="header header-sticky p-0 mb-4">
+    <div class="container-fluid border-bottom px-4">
+        <!-- Sidebar Toggler -->
+        <button class="header-toggler" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()" style="margin-inline-start: -14px;">
+            <svg class="icon icon-lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path fill="var(--ci-primary-color, currentcolor)" d="M80 96h352v32H80zm0 144h352v32H80zm0 144h352v32H80z" />
+            </svg>
+        </button>
+        
+        <!-- Header Navigation -->
+        <ul class="header-nav ms-auto">
+            <!-- Breadcrumb -->
+            <li class="nav-item py-1">
+                <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
+            </li>
+            
+            <!-- User Avatar Dropdown -->
+            <li class="nav-item dropdown">
+                <a class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    <div class="avatar avatar-md">
+                        <img class="avatar-img" th:src="@{/assets/img/avatars/8.jpg}" alt="User Avatar">
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end pt-0">
+                    <div class="dropdown-header bg-body-tertiary text-body-secondary fw-semibold rounded-top mb-2">Account</div>
+                    
+                    <!-- User Info -->
+                    <div th:if="${user != null}">
+                        <div class="text-body fw-bold mb-1" th:text="${user.username ?: 'User'}"></div>
+                        <div class="text-body-secondary small" th:text="${user.displayName ?: ''}"></div>
+                    </div>
+                    
+                    <!-- Logout Form -->
+                    <form th:action="@{/logout}" method="post" class="mt-2">
+                        <th:block th:if="${_csrf != null}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        </th:block>
+                        <button type="submit" class="dropdown-item text-danger fw-semibold rounded-bottom">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+</header>
