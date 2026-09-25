@@ -31,6 +31,14 @@
         "baseURL": "http://amd.lan:1234/v1"
       },
       "models": {
+        "glm-4.7-flash-reap-23b-a3b": {
+          "name": "GLM4.7 Flash 23b a3b",
+          "limit": {
+            "context": 65536,
+            "input": 49162,
+            "output": 16384
+          }
+        },
         "qwen3.6-35b-a3b-mtp": {
           "name": "Qwen3.6 35b a3b",
           "limit": {

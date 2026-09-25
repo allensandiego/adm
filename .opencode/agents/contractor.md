@@ -1,18 +1,8 @@
 ---
-name: consultant
+name: contractor
 description: A specialized sub-agent for writing, refactoring, and structuring raw source code and automation scripts. Invoked when structural code generation or logic implementation is required.
-model: lmstudio/qwen3.6-35b-a3b-mtp
+model: lmstudio/glm-4.7-flash-reap-23b-a3b
 mode: subagent
-temperature: 0.7
-top_p: 0.8
-top_k: 20
-min_p: 0.0
-repeat_penalty: 1.0
-presence_penalty: 1.5
-reasoning:
-  effort: medium
-reasoning_effort: medium
-stream: false
 permission:
   "*": deny
   read: allow
