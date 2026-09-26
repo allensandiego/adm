@@ -22,6 +22,7 @@ Represents a person with a login account.
 |--------------|-----------|-----------------------------------------------------------|
 | id           | UUID      | PK (v4)                                                   |
 | username     | string    | unique, non-blank, <=64 chars, `[a-zA-Z0-9._-]+`          |
+| password     | string    | non-blank, `[a-zA-Z0-9._-]+`                              |
 | display_name | string    | non-blank, <=120 chars                                    |
 | status       | enum      | `ACTIVE` / `INACTIVE`; default `ACTIVE`                   |
 | version      | long      | optimistic locking (FR-013)                               |
@@ -64,6 +65,7 @@ A single named capability; the atomic grant unit.
 | id            | UUID    | PK (v4)                                        |
 | code          | string  | unique, centralized id, `[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*`, <=80 chars (FR-015) |
 | label         | string  | non-blank, <=120 chars                         |
+| path          | string  | non-blank, <=120 chars                         |
 | active        | boolean | default true (FR-003)                          |
 | created_at    | timestamp| UTC                                           |
 | updated_at    | timestamp| UTC                                           |
@@ -94,21 +96,6 @@ Connects users to roles; the user-role assignment screen mutates this table.
 | user_id | UUID | FK -> users, cascade delete              |
 | role_id | UUID | FK -> roles, cascade delete              |
 | PK      | (user_id, role_id) — enforces at most one assignment per pair (FR-007) |
-
-### audit_event (supporting)
-
-Append-only record for FR-014. Not an RBAC entity; listed explicitly for transparency.
-
-| field      | type    | rules                                  |
-|------------|---------|----------------------------------------|
-| id         | UUID    | PK (v4)                                |
-| actor_id   | UUID    | FK -> users (nullable for system seed) |
-| action     | string  | e.g. `ROLE_PERMISSIONS_UPDATED`        |
-| target_type| string  | entity kind: PERMISSION/ROLE/USER      |
-| target_id  | UUID    | affected entity id                     |
-| before     | json    | prior state (nullable)                 |
-| after      | json    | new state                              |
-| occurred_at| timestamp | UTC, set once                         |
 
 ## Effective permission resolution
 

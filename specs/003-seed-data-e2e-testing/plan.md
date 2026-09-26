@@ -21,8 +21,7 @@ test data model in [data-model.md](data-model.md); run/validation guide in
 
 ## Technical Context
 
-**Language/Version**: Java 21 (`pom.xml` `<java.version>21</java.version>`; constitution
-Principle III requires 17+)
+**Language/Version**: Java 21 (`pom.xml` `<java.version>21</java.version>`; satisfies constitution Principle III requirement of Java 17+ LTS)
 
 **Primary Dependencies**: Spring Boot 4.1.1 (Maven parent). For test support,
 `com.microsoft.playwright:playwright` 1.63.0 (already declared in `pom.xml`) plus JUnit 5 via

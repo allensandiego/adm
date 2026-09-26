@@ -27,8 +27,7 @@ appears every time the environment is started, with no duplicates and no manual 
 state. Without deterministic seed data, end-to-end checks cannot assert predictable outcomes.
 
 **Independent Test**: Can be fully tested by starting the environment twice and confirming
-the dataset (accounts, roles, permissions, assignments) is byte-for-byte equivalent and
-contains no duplicates.
+the dataset (users, roles, permissions, role_permissions, user_roles) is identical in all business-relevant fields and contains no duplicates.
 
 **Acceptance Scenarios**:
 
@@ -124,8 +123,7 @@ every protected screen yields both a success path and a refusal path.
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a deterministic, documented seed dataset containing the core
-  domain data — users, roles, permissions, role-permission grants, and user-role assignments.
+- **FR-001**: System MUST provide a deterministic, documented seed dataset containing all five RBAC entities from constitution Principle I: users, roles, permissions, role_permissions (mapping), and user_roles (assignments) — exactly as defined in constitution Principle I and data-model.md.
 - **FR-002**: The seed dataset MUST include at least: a fully-privileged administrator, a
   restricted non-administrator, and a deactivated account, with documented credentials.
 - **FR-003**: Seeding MUST be idempotent: repeated starts MUST converge to the same state
@@ -137,7 +135,7 @@ every protected screen yields both a success path and a refusal path.
 - **FR-006**: System MUST provide an automated end-to-end test suite that drives a real browser
   through the running application, exercising it as an end user would.
 - **FR-007**: The suite MUST cover the sign-in journeys: valid credentials succeed, invalid
-  credentials are refused with a generic message, and deactivated accounts are refused.
+  credentials are refused with a generic message, and deactivated accounts are refused (linked to SC-008 lockout guardrail testing in US3).
 - **FR-008**: The suite MUST cover the core administrative journeys in a browser: permission
   catalog management, role creation and permission editing, and user creation with role
   assignment.
@@ -146,22 +144,18 @@ every protected screen yields both a success path and a refusal path.
 - **FR-010**: The suite MUST verify both sides of every protected permission boundary: the
   authorized account succeeds and the unauthorized account is refused without seeing protected
   content.
-- **FR-011**: The suite MUST verify the lockout guardrails: the final administrative role
-  cannot be deleted and the last administrator cannot be stripped of administrative access.
+- **FR-011**: The suite MUST verify the lockout guardrails: the final administrative role (Super Admin) cannot be deleted, the last administrator cannot be removed from their role, and the last active administrator account cannot be deactivated — all covered by SC-008.
 - **FR-012**: Each end-to-end test MUST be independently runnable and order-independent,
   passing on its own from the seeded starting state.
 - **FR-013**: The suite MUST start or connect to the application automatically, requiring only
   a single documented command from a fresh checkout.
 - **FR-014**: The suite MUST execute headless by default for automation while supporting a
   headed mode for local diagnosis, with identical assertions in both modes.
-- **FR-015**: On failure, the suite MUST capture diagnostic artifacts for the failing step and
-  report the failing journey, step, and observed state.
-- **FR-016**: The suite MUST synchronize on expected application states rather than fixed
-  delays, so that normal render and network variability does not cause failures.
+- **FR-015**: On failure, the suite MUST capture diagnostic artifacts (Playwright trace + full-page screenshot) for the failing step and report the failing journey, step, and observed state (SC-007).
+- **FR-016**: The suite MUST synchronize on expected application states (readiness check via E2EBase readiness endpoint) rather than fixed delays, so that normal render and network variability does not cause failures (FR-012 order-independence).
 - **FR-017**: The suite MUST produce a clear machine-readable pass/fail result suitable for
   a continuous integration gate.
-- **FR-018**: The suite MUST drive the application's actual production screens and MUST NOT
-  depend on separate test-only pages.
+- **FR-018**: The suite MUST drive the application's actual production screens (CoreUI templates in coreui/) and MUST NOT depend on separate test-only pages — all assertions against rendered UI content.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -178,41 +172,29 @@ every protected screen yields both a success path and a refusal path.
 
 ### Measurable Outcomes
 
-- **SC-001**: 100% of the core administrative journeys (permission, role, user, and assignment
-  management) are exercised end-to-end through a real browser.
-- **SC-002**: 100% of protected screens have both an authorized success scenario and an
-  unauthorized refusal scenario.
-- **SC-003**: Repeated seeding produces zero duplicates and an identical dataset across 10
-  consecutive starts.
-- **SC-004**: The full end-to-end suite completes in under 10 minutes on a standard development
-  machine.
-- **SC-005**: The suite is deterministic: 20 consecutive runs yield the same pass/fail result
-  with zero flaky failures.
+- **SC-001**: 100% of the core administrative journeys (FR-008: permission catalog, role creation/permission editing, user creation with role assignment) are exercised end-to-end through a real browser.
+- **SC-002**: 100% of protected screens from features 001/002 have both an authorized success scenario (admin) and unauthorized refusal scenario (e2e.viewer/e2e.inactive) — dual-sided authorization testing.
+- **SC-003**: Repeated seeding produces zero duplicates (verified in T015) and an identical dataset across 10 consecutive application restarts with database reset between runs.
+- **SC-004**: The full end-to-end suite completes in under 10 minutes (T030 SuiteDurationTest) on a standard development machine (JDK 21, Maven 3.9+, Chromium browser installed via Playwright CLI).
+- **SC-005**: The suite is deterministic: 20 consecutive runs (T029) yield identical pass/fail results with zero flaky failures (order-independent scenarios, state-based waits).
 - **SC-006**: A new contributor can run the entire suite with one documented command and no
   manual environment changes.
-- **SC-007**: Every failed scenario leaves enough diagnostic artifacts to identify the failing
-  step without re-running.
-- **SC-008**: 100% of lockout guardrail attempts are proven blocked by an end-to-end scenario.
+- **SC-007**: Every failed scenario leaves diagnostic artifacts (Playwright trace + screenshot in target/e2e-artifacts/<scenario>, T009) sufficient to identify the failing step without re-running.
+- **SC-008**: 100% of lockout guardrail attempts (E2E-LOCK-01/02/03: final admin role deletion, last admin removal, last active admin deactivation) are proven blocked by end-to-end scenarios — mutations rejected with conflict errors, no state change.
 
 ## Assumptions
 
 - The end-to-end suite is implemented with Java Playwright (the mechanism specified by the
   requester) and drives a real browser against the running application.
-- The behavior under test is defined by the existing RBAC user-management and JDBC user
-  authentication specifications; this feature verifies them end-to-end and does not add new
-  product behavior beyond test-support data.
-- The application screens exercised by the suite are built from the vendored CoreUI template
-  set under `coreui/` (sign-in, dashboard, tables, forms, and error pages), consistent with
-  the constitution's CoreUI requirement; no separate test-only pages are used.
+- The behavior under test is defined by features 001-rbac-user-management (entities, services, screens) and 002-jdbc-user-authentication (sign-in, hashed credentials, account status); this feature verifies them end-to-end without adding new product behavior.
+- The application screens exercised by the suite are built from the vendored CoreUI template set under `coreui/` (sign-in, dashboard, tables, forms, and error pages), consistent with constitution Principle III (Thymeleaf+CoreUI stack); no separate test-only pages are used.
 - Seeded data is activated only under test/development profiles; the default runtime remains
   free of test accounts.
-- The primary target browser is a single modern Chromium-based engine; cross-browser coverage
-  is not required unless requested later.
-- The test environment uses the embedded database, which may be reset between runs; the seed
-  is re-applied deterministically on start.
+- The primary target browser is Chromium (single-engine focus per spec); Playwright supports headed/headless modes identically, no cross-browser requirements.
+- The test environment uses the embedded H2 database managed by Hibernate (constitution Principle III); schema auto-managed via ddl-auto, no manual reset required.
 - The application can be launched by the suite or pointed at an already-running instance via
   configuration.
 - Browser automation runs headless in continuous integration and headed locally, with no
   differences in assertions.
-- Seeded credentials are test-only, documented, and never used in production.
-- Standard developer workstation and CI runners can host a headless browser.
+- Seeded credentials are test-only, documented, and never used in production; passwords stored hashed (BCrypt) via feature 002 authentication model.
+- Standard developer workstation (8GB RAM, 4 cores) and CI runners can host a headless Chromium browser; Playwright provisions binaries automatically.

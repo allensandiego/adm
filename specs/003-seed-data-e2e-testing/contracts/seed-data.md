@@ -1,16 +1,13 @@
 # Seed Data Contract
 
-**Date**: 2026-09-26 (refreshed) | Implements FR-001..FR-005, SC-003.
+**Date**: 2026-09-26 (refreshed) | Implements FR-001..FR-005, SC-003, constitution Principle I (five RBAC entities).
 
 ## Guarantees
 
-1. **Confined**: applied only under `test`/`dev` profiles. A production start creates none of
-   these rows (FR-004).
-2. **Idempotent**: every start converges to exactly the rows below; no duplicates (FR-003).
-3. **Single source of truth**: E2E scenarios assert against this baseline and create only
-   run-unique records on top of it (FR-005, FR-012).
-4. **Known credentials**: the values below are documented test-only credentials; nothing is
-   secret-derived beyond the configurable admin password.
+1. **Confined**: applied only under `test`/`dev` profiles (FR-004, constitution Principle III). A production start creates none of these rows.
+2. **Idempotent**: every start converges to exactly the rows below; no duplicates (FR-003, constitution Principle I).
+3. **Single source of truth**: E2E scenarios assert against this baseline and create only run-unique records on top of it (FR-005, FR-012).
+4. **Known credentials**: the values below are documented test-only credentials; nothing is secret-derived beyond the configurable admin password (feature 002 BCrypt hashing).
 
 ## Personas
 
@@ -31,7 +28,7 @@
 
 `permission.view`, `permission.create`, `permission.edit`, `user.view`, `user.create`,
 `user.edit`, `user.activate`, `user.roles.assign`, `role.view`, `role.create`, `role.edit`,
-`role.delete`, `role.permissions.edit` — all active.
+`role.delete`, `role.permissions.edit` — all active (FR-010, constitution Principle III).
 
 ## Expected effective permissions (assertable)
 
@@ -43,7 +40,7 @@
 ## Reconciliation rules
 
 - Natural keys: user `username`, role `name`, permission `code`.
-- Mappings reconciled to the documented set; unrelated end-user rows are never removed.
+- Mappings reconciled to the documented set; unrelated end-user rows are never removed or deleted.
 - Re-running the seeder 10 times (SC-003) leaves counts and values unchanged.
 
 ## Dependencies

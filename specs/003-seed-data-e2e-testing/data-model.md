@@ -2,20 +2,17 @@
 
 **Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-018 and decisions D-1..D-9.
 
-This feature introduces **no new product entities**. It specifies the seeded *test data* over
-the five RBAC entities defined in feature 001, plus the E2E run concepts. References:
-[../001-rbac-user-management/data-model.md](../001-rbac-user-management/data-model.md).
+This feature introduces **no new product entities**. It specifies the seeded *test data* over all five RBAC entities (users, roles, permissions, role_permissions, user_roles) defined in constitution Principle I and feature 001, plus the E2E run concepts. References: [../001-rbac-user-management/data-model.md](../001-rbac-user-management/data-model.md).
 
 ## Conventions
 
 - Seed rows use natural keys (permission `code`, role `name`, user `username`) as the
   idempotency key; no fixed UUIDs are required.
 - Seeding upserts within one transaction: create-if-missing, correct-if-drifted, never delete
-  end-user-created rows (Spec Edge Case 1).
-- Row timestamps are UTC, consistent with the base schema.
-- Passwords are stored hashed (BCrypt) and never in plaintext; only the documented test-only
-  values are recoverable by testers.
-- Seeding is active only under the `test`/`dev` profiles (FR-004).
+  end-user-created rows.
+- Row timestamps are UTC, consistent with constitution Principle I (UTC semantics for audit trails).
+- Passwords are stored hashed (BCrypt, feature 002 authentication model) and never in plaintext; only the documented test-only values are recoverable by testers.
+- Seeding is active only under the `test`/`dev` profiles (FR-004, constitution Principle III).
 
 ## Seed dataset composition
 
@@ -69,7 +66,5 @@ All 13 centralized permission codes are seeded: `permission.view`, `permission.c
 
 ## Validation
 
-- Bean Validation and service-layer uniqueness from feature 001 remain the only write paths;
-  the seeder calls services/repositories rather than bypassing validation (D-1).
-- Effective-permission expectations in the persona table must match feature 001's resolution
-  rule (union of active permissions of assigned roles; inactive user → empty).
+- Bean Validation and service-layer uniqueness from feature 001 remain the only write paths; the seeder calls services/repositories rather than bypassing validation (D-1, constitution Principle III).
+- Effective-permission expectations in the persona table must match constitution Principle II and feature 001's resolution rule (union of active permissions of assigned roles; inactive user → empty).

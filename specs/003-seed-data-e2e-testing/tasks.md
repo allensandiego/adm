@@ -1,4 +1,5 @@
 ---
+
 description: "Task list for Seed Data & End-to-End Testing feature implementation"
 ---
 
@@ -6,12 +7,11 @@ description: "Task list for Seed Data & End-to-End Testing feature implementatio
 
 **Input**: Design documents from `/specs/003-seed-data-e2e-testing/`
 
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md,
-data-model.md, contracts/
+**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/e2e-scenarios.md
 
-**Tests**: INCLUDED. This feature *is* a test suite — the E2E scenarios are the deliverable
-(FR-006..FR-011), and the constitution (Principle IV) mandates dual-sided authorization
-coverage plus lockout-guard tests. Seed verification is also test-backed.
+**Tests**: INCLUDED. The constitution (v2.0.0, Principle IV) mandates explicit tests for both
+sides of every permission boundary plus lockout-critical behavior. Every end-to-end scenario
+must be independently runnable and order-independent.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and
 testing of each story.
@@ -19,317 +19,367 @@ testing of each story.
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
+- **[Story]**: Which user story this task belongs to (e.g., US1, US2)
 - Include exact file paths in descriptions
 
 ## Path Conventions
 
-- Single Spring Boot Maven project at repository root.
-- Base package (actual): `com.allensandiego.adm` (research D-9; matches `AdmApplication` and the
-  `com.allensandiego` groupId in `pom.xml`).
-- Seeder (main): `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`.
-- E2E suite (test): `src/test/java/com/allensandiego/adm/e2e/` with a `support/` subpackage.
-- Test resources / artifacts: `src/test/resources/e2e/` and `target/e2e-artifacts/`.
-- Screens under test come from the vendored CoreUI asset set at `coreui/`, rendered as
-  Thymeleaf templates in `src/main/resources/templates/`.
-- Results log: `specs/003-seed-data-e2e-testing/notes.md` (created in T005).
+- Single Spring Boot Maven project at repository root, artifact `adm`.
+- Base package: `com.allensandiego.adm` (matches `AdmApplication` and the `pom.xml` groupId
+  `com.allensandiego`).
+- Main sources: `src/main/java/com/allensandiego/adm/`; tests:
+  `src/test/java/com/allensandiego/adm/`; views: `src/main/resources/templates/`.
+- Config: `src/main/resources/application.properties` (embedded H2, Hibernate `ddl-auto`).
+- E2E test sources: `src/test/java/com/allensandiego/adm/e2e/`.
+- Static assets: `src/main/resources/static/` (CSS/JS copied from the vendored `coreui/`
+  template at the repo root).
 
-> **Cross-feature dependency (from plan/research D-9)**: features `001-rbac-user-management`
-> (entities, services, screens) and `002-jdbc-user-authentication` (sign-in, hashed
-> credentials, account status) MUST be implemented first; this feature seeds and tests their
-> behavior. Both now use the real base package `com.allensandiego.adm`, so **no package
-> reconciliation remains outstanding** — the seeder imports 001's entities/services directly.
+> **Cross-feature dependencies**: this feature depends on features 001-rbac-user-management
+> (entities, services, screens) and 002-jdbc-user-authentication (sign-in, hashed credentials,
+> account status). Feature 003 verifies them end-to-end without adding new product behavior.
 
-> ⚠️ **Suite-class naming contract**: `contracts/e2e-scenarios.md` pins the scenario classes as
-> `AuthE2ETest`, `AdminJourneysE2ETest`, and `PermissionBoundaryE2ETest`. Failsafe's default
-> include is `**/*IT.java` only, so these `*E2ETest` names would be **silently skipped** unless
-> T001 adds an explicit `<includes>` pattern. T001 is load-bearing — verify it before writing
-> any scenario.
+---
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: E2E build tooling and environment configuration
+**Purpose**: Build dependencies, configuration, and E2E harness for browser-driven testing
 
-- [ ] T001 Configure the E2E build in `pom.xml`: add `<scope>test</scope>` to the existing
-      `com.microsoft.playwright:playwright` 1.63.0 dependency (already present, currently
-      unscoped); add `maven-failsafe-plugin` bound to `integration-test`/`verify` with explicit
-      `<includes>` of `**/*E2ETest.java` and `**/*IT.java` (the `*E2ETest` pattern is required —
-      see the naming contract above); add `<properties><failsafeArgLine>-De2e.base-url=${e2e.base-url}
-      -De2e.headless=${e2e.headless} -De2e.browser=${e2e.browser} -De2e.artifacts-dir=${e2e.artifacts-dir}</failsafeArgLine></properties>`
-      with matching `<properties>` defaults; add `exec-maven-plugin` for the Playwright browser
-      install; and exclude `**/*E2ETest.java` from `maven-surefire-plugin` so 001/002 unit and
-      MockMvc tests stay on `mvn test` (research D-3/D-7, `contracts/README.md`)
-- [ ] T002 [P] Create `src/main/resources/application-test.properties` with seed and E2E
-      defaults: seeding enabled, `app.seed.admin-password`, and `e2e.base-url` /
-      `e2e.headless` / `e2e.browser` / `e2e.artifacts-dir` per `contracts/README.md`
-- [ ] T003 [P] Create the E2E package skeleton `src/test/java/com/allensandiego/adm/e2e/` and
-      `.../e2e/support/`, plus `src/test/resources/e2e/`, with a short package README noting
-      the `*E2ETest` naming, the Failsafe wiring from T001, and why `-Dit.test=` (not `-Dtest=`)
-      selects a single scenario class
-- [ ] T004 [P] Create `HELP.md` at the repository root with suite invocation, browser
-      provisioning (`./mvnw -q exec:java -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"`),
-      the `test` profile requirement, and artifact locations per `contracts/README.md` and
-      `quickstart.md` (SC-006)
-- [ ] T005 [P] Create `specs/003-seed-data-e2e-testing/notes.md` as the run-results log used by
-      T016, T023, T028, and T033, with placeholder headings per user story
-
----
-
-## Phase 2: Foundational (Blocking Prerequisites)
-
-**Purpose**: Core seeding mechanics and the Playwright harness that every story relies on
-
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
-
-- [ ] T006 Create the profile-gated idempotent seeder scaffold in
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` with `@Profile({"test","dev"})`,
-      a transactional upsert helper keyed by natural key (`username` / `name` / `code`), and
-      no-op behavior when the profile is inactive (depends on T001..T005)
-- [ ] T007 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/E2EConfig.java`
-      resolving base URL (start-in-process vs `-De2e.base-url`), headless flag, browser engine,
-      artifacts dir, and persona credentials from configuration
-- [ ] T008 Create the harness in `src/test/java/com/allensandiego/adm/e2e/support/E2EBase.java`:
-      application start-or-connect, readiness polling with a fail-fast message naming the
-      attempted URL, per-scenario `BrowserContext`/`Page`, and teardown (depends on T007)
-- [ ] T009 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/FailureArtifacts.java`
-      capturing a Playwright trace and full-page screenshot on scenario failure under
-      `target/e2e-artifacts/<scenario>/`
-- [ ] T010 [P] Create `src/test/java/com/allensandiego/adm/e2e/support/RunUniqueData.java`
-      providing the per-run id suffix used by mutating scenarios so they stay order-independent
-      (FR-012, research D-6), plus a sign-in helper for each of the three personas
-
-**Checkpoint**: Seeder mechanism and browser harness ready — user stories can now begin.
+- [ ] T001 Verify `pom.xml` carries the E2E stack and add nothing that is missing:
+      `com.microsoft.playwright:playwright` (test scope, for browser automation),
+      `org.junit.jupiter:junit-jupiter-engine`, `org.junit.jupiter:junit-jupiter-api`,
+      `org.springframework.boot:spring-boot-starter-test` (already present from 001), and
+      Maven Failsafe plugin configuration in `pom.xml` to run E2E tests (`*IT`/`E2E` naming)
+- [ ] T002 Configure `src/main/resources/application-test.properties`: seed enabled, admin password
+      default value (research D-8), base URL behavior (start-in-process or connect), and browser
+      headless mode defaults — this file is profile-gated and never merged to production
+- [ ] T003 Create the E2E harness package `src/test/java/com/allensandiego/adm/e2e/` with
+      subpackages `config/`, `support/`, `scenarios/` for test organization (research D-9)
+- [ ] T004 Implement the `E2EConfig` class in
+      `src/test/java/com/allensandiego/adm/e2e/config/E2EConfig.java`: resolves the application
+      base URL from `e2e.base-url` system property/environment variable, starts the application
+      in-process on a random port with the `test` profile if no URL is supplied, and skips startup
+      if a URL is provided (research D-4)
+- [ ] T005 Implement the readiness check utility in
+      `src/test/java/com/allensandiego/adm/e2e/support/ReadinessChecker.java`: polls the base URL
+      for a readiness endpoint or health check, fails fast with an actionable message when
+      unreachable (Edge Case 3, research D-4)
+- [ ] T006 Create the Playwright browser setup in
+      `src/test/java/com/allensandiego/adm/e2e/support/BrowserFactory.java`: provisions Chromium
+      via Playwright CLI (`com.microsoft.playwright.CLI install chromium`), creates one
+      `Playwright`/`Browser` per run, and a fresh `BrowserContext`/`Page` per scenario (research D-3)
+- [ ] T007 Implement the page object base class in
+      `src/test/java/com/allensandiego/adm/e2e/support/BasePage.java`: provides helper methods for
+      state-based waiting (Playwright auto-waiting, FR-016), navigation to a URL, and failure
+      artifact capture (trace + screenshot on exception) (research D-5, FR-015)
 
 ---
 
-## Phase 3: User Story 1 - Reproducible Seeded Dataset (Priority: P1) 🎯 MVP
+## Phase 2: Seed Data Implementation (FR-001 through FR-008)
 
-**Goal**: A known, fixed dataset (administrator, restricted, deactivated personas with their
-roles/permissions/assignments) exists on every test/dev start, idempotently and confined to
-those environments.
+**Purpose**: Implement deterministic, idempotent seeded test data for all five RBAC entities
 
-**Independent Test**: Start the environment 10 times and confirm the dataset (accounts, roles,
-permissions, assignments) is identical with zero duplicates, and that a profile-less start
-seeds nothing.
+**⚠️ CRITICAL**: Feature 003 depends on feature 001's entities and services being complete
+
+- [ ] T008 Create the `TestDataSeeder` component in
+      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`: activated only under
+      the `test`/`dev` profiles (`@Profile`), upserts defined rows by natural key (username, role
+      name, permission code) inside a transaction, uses the same repositories/services as the
+      application, and is safe to run on every startup (research D-1, FR-003)
+- [ ] T009 Implement the permission seeding logic in `TestDataSeeder`: inserts all 13 centralized
+      permission codes (`permission.view/create/edit`, `user.view/create/edit/activate/roles.assign`,
+      `role.view/create/edit/delete/permissions.edit`) as active from `Permissions.java` (T006 from 001)
+- [ ] T010 Implement the role seeding logic in `TestDataSeeder`: creates "Super Admin" with all 13
+      codes and "Report Viewer" with only view permissions (`permission.view`, `role.view`,
+      `user.view`) (data-model.md, research D-2)
+- [ ] T011 Implement the user seeding logic in `TestDataSeeder`: creates three personas:
+      `e2e.admin` (ACTIVE, Super Admin role), `e2e.viewer` (ACTIVE, Report Viewer role), and
+      `e2e.inactive` (INACTIVE, Report Viewer role) with documented credentials (data-model.md,
+      research D-2)
+- [ ] T012 Implement the mapping seeding logic in `TestDataSeeder`: upserts `role_permissions` for
+      Super Admin → all codes and Report Viewer → its 3 codes; upserts `user_roles` assignments
+      for all three personas (data-model.md)
+- [ ] T013 Verify idempotency: repeated seeding runs produce identical counts and values without
+      duplicates (SC-003, data-model.md section "Idempotency & reconciliation rules")
+- [ ] T014 Verify environment gating: seeding is off unless the `test`/`dev` profile is active;
+      production startup creates no test data (FR-004)
+
+---
+
+## Phase 3: User Story 1 - Sign-In Journeys (FR-007, FR-008 part)
+
+**Goal**: The suite covers sign-in journeys: valid credentials succeed, invalid credentials are
+refused with a generic message, and deactivated accounts are refused (SC-008 lockout guardrail
+testing in US3).
+
+**Independent Test**: Each scenario is independently runnable from the seeded starting state.
+
+### Tests for User Story 1 (write FIRST, ensure they FAIL before implementation) ⚠️
+
+- [ ] T015 [P] [US1] Sign-in success test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: given the application
+      and seeded data are running, when a real browser signs in as `e2e.admin` with valid
+      credentials, then it reaches the dashboard without manual steps (FR-007)
+- [ ] T016 [P] [US1] Invalid credentials test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: given the sign-in
+      screen, when wrong password or unknown username is submitted, then a single generic
+      "invalid credentials" message shows and no session is created (FR-007)
+- [ ] T017 [P] [US1] Inactive account test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: given the
+      `e2e.inactive` persona, when correct credentials are submitted, then entry is refused and
+      no session is created (FR-007, US3 SC-008)
 
 ### Implementation for User Story 1
 
-> All five tasks write `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`, so they
-> are sequential by construction and carry no `[P]` marker.
-
-- [ ] T011 [US1] Seed the 13-code permission catalog (all active) in
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` per
-      `contracts/seed-data.md`
-- [ ] T012 [US1] Seed the `Super Admin` (protected, all codes) and `Report Viewer` (3 view
-      codes) roles and their `role_permissions` mappings in
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` (depends on T011)
-- [ ] T013 [US1] Seed the `e2e.admin`, `e2e.viewer`, and `e2e.inactive` personas with hashed
-      passwords, statuses, and `user_roles` assignments in
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` (depends on T012)
-- [ ] T014 [US1] Enforce idempotent reconciliation (create-if-missing, correct-if-drifted,
-      never delete unrelated rows) and profile confinement/off-by-default in
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java` (depends on T013)
-- [ ] T015 [US1] Idempotency + confinement dataset test in
-      `src/test/java/com/allensandiego/adm/config/TestDataSeederIT.java`: run the seeder across
-      **10 consecutive starts** and assert identical counts/values and zero duplicates (SC-003);
-      assert no seed rows under the default profile (FR-004) (depends on T014)
-- [ ] T016 [US1] Verify US1 independently: restart the app 10 times in the `test` profile and
-      confirm the dataset is unchanged; record the observed baseline in
-      `specs/003-seed-data-e2e-testing/notes.md`
-
-**Checkpoint**: Seeded baseline is deterministic and independently verifiable — MVP.
+- [ ] T018 [P] [US1] Create the `AuthE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: extends `BasePage`,
+      signs in as each persona, and asserts the visible outcomes (FR-007, research D-5)
 
 ---
 
-## Phase 4: User Story 2 - End-to-End Verification of Core Admin Journeys (Priority: P2)
+## Phase 4: User Story 2 - Core Admin Journeys (FR-008 part)
 
-**Goal**: One command signs in as the seeded administrator in a real browser and walks the
-core management journeys, asserting results on screen.
+**Goal**: The suite covers core administrative journeys in a browser: permission catalog management,
+role creation and permission editing, and user creation with role assignment.
 
-**Independent Test**: Run the browser-driven US2 scenarios against the seeded application and
-confirm sign-in, permission/role/user journeys, and effective-permission display all pass
-without manual interaction.
+**Independent Test**: Each scenario is independently runnable from the seeded starting state.
 
-### Tests for User Story 2 ⚠️
+### Tests for User Story 2 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-> Write these scenarios first; they must fail against a missing/incorrect app, then pass once
-> the application (features 001/002) and selectors are correct.
-
-- [ ] T017 [P] [US2] Implement sign-in scenarios E2E-AUTH-01/02/03 in
-      `src/test/java/com/allensandiego/adm/e2e/AuthE2ETest.java` per
-      `contracts/e2e-scenarios.md`
-- [ ] T018 [P] [US2] Implement permission-journey scenarios E2E-PERM-01/02 in
-      `src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java`
+- [ ] T019 [P] [US2] Permission catalog test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      admin, when a new permission is created via the CoreUI form, then it appears in the list and
+      is selectable in the role editor (FR-008, SC-001)
+- [ ] T020 [P] [US2] Permission validation test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      admin, when a blank or duplicate permission code is submitted, then a clear validation message
+      shows and nothing is created (FR-008)
+- [ ] T021 [P] [US2] Role creation test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      admin, when a role is created with a permission set and reopened, then the saved set is exactly
+      what was configured (FR-008, SC-001)
+- [ ] T022 [P] [US2] User creation test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      admin, when a user is created and a role assigned, then the assignment persists and is shown on
+      the user detail (FR-008, SC-001)
+- [ ] T023 [P] [US2] Effective permissions test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given a user with
+      multiple roles, when their detail is opened, then displayed effective permissions equal the union
+      of the roles' active permissions; deactivating a permission removes it from the union (FR-009, SC-001)
 
 ### Implementation for User Story 2
 
-> T019 and T020 extend the same `AdminJourneysE2ETest.java` file created in T018, so they are
-> sequential and carry no `[P]` marker.
-
-- [ ] T019 [US2] Implement role-journey and effective-permission scenarios E2E-ROLE-01 and
-      E2E-EFF-01 in `src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java`
-      (depends on T018)
-- [ ] T020 [US2] Implement user-journey scenario E2E-USER-01 in
-      `src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java` (depends on T019)
-- [ ] T021 [US2] Add `data-testid` anchors required by US2 to the CoreUI-based Thymeleaf
-      templates in `src/main/resources/templates/` (role/label locators first; testids only
-      where no accessible anchor exists) per research D-5
-- [ ] T022 [US2] Run the US2 scenarios headless and stabilize locators/waits until green
-      (state-based waits only; no fixed sleeps) using
-      `./mvnw verify -Dit.test='AuthE2ETest,AdminJourneysE2ETest'` — `failsafe:integration-test`
-      selects classes via `-Dit.test=`, so `-Dtest=` would match nothing
-- [ ] T023 [US2] Verify US2 independently and record results in
-      `specs/003-seed-data-e2e-testing/notes.md`
-
-**Checkpoint**: Sign-in and core admin journeys verified end-to-end in a real browser.
+- [ ] T024 [P] [US2] Create the `AdminJourneysE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: extends `BasePage`,
+      signs in as admin, and executes each core journey with assertions (FR-008)
+- [ ] T025 [P] [US2] Create the permission catalog page object in
+      `src/test/java/com/allensandiego/adm/e2e/support/PermissionPage.java`: locators for list, form,
+      detail views using accessible roles/labels and `data-testid` where needed (research D-5)
+- [ ] T026 [P] [US2] Create the role management page object in
+      `src/test/java/com/allensandiego/adm/e2e/support/RolePage.java`: locators for list, form, detail,
+      and permission editor views (research D-5)
+- [ ] T027 [P] [US2] Create the user management page object in
+      `src/test/java/com/allensandiego/adm/e2e/support/UserPage.java`: locators for list, form, detail,
+      and role assignment views (research D-5)
 
 ---
 
-## Phase 5: User Story 3 - End-to-End Verification of Permission Boundaries and Lockout Guards (Priority: P3)
+## Phase 5: User Story 3 - Permission Boundaries and Lockout Guards (FR-010, FR-011, SC-008)
 
-**Goal**: The suite proves both sides of every protected boundary and that the lockout
-guardrails block dangerous mutations in the real UI.
+**Goal**: The suite proves both sides of every permission boundary in a real browser: the authorized
+administrator succeeds, while a restricted account is refused and never sees protected content. It
+also proves the lockout guardrails: attempts to delete the final administrative role or remove the
+last administrator are blocked.
 
-**Independent Test**: Run the boundary/lockout scenarios and confirm each protected screen
-yields both an authorized success and a refusal, and that final-admin/final-role mutations are
-blocked with no state change.
+**Independent Test**: Each scenario is independently runnable from the seeded starting state.
 
-### Tests for User Story 3 ⚠️
+### Tests for User Story 3 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [ ] T024 [P] [US3] Implement allow/deny boundary scenarios E2E-DENY-01/02 and E2E-ALLOW-01 in
-      `src/test/java/com/allensandiego/adm/e2e/PermissionBoundaryE2ETest.java` per
-      `contracts/e2e-scenarios.md`
-- [ ] T025 [US3] Implement lockout-guard scenarios E2E-LOCK-01/02/03 in
-      `src/test/java/com/allensandiego/adm/e2e/PermissionBoundaryE2ETest.java` (depends on T024)
+- [ ] T028 [P] [US3] Deny viewer test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      `e2e.viewer` persona, when each management screen/action beyond its view permissions is attempted,
+      then access is refused and no protected content is rendered (FR-010, SC-002)
+- [ ] T029 [P] [US3] Allow admin test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      admin persona, when the same navigation/actions are performed as E2E-DENY-01, then each succeeds
+      (dual-sided counterpart of E2E-DENY-01, FR-010)
+- [ ] T030 [P] [US3] Deny inactive test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      `e2e.inactive` persona (session simulated), when any protected screen is requested, then access
+      is refused (FR-010, SC-008)
+- [ ] T031 [P] [US3] Lockout final role test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      final protected role (Super Admin), when deletion is attempted, then it is blocked with a visible
+      warning and the dataset is unchanged (FR-011, SC-008)
+- [ ] T032 [P] [US3] Lockout last assignment test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the last
+      administrator assignment, when removal (including self-demotion) is attempted, then it is blocked
+      and nothing changes (FR-011, SC-008)
+- [ ] T033 [P] [US3] Lockout last active user test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the last
+      active administrator, when deactivation is attempted, then it is blocked and nothing changes (FR-011,
+      SC-008)
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Add `data-testid` anchors for the "not authorized" page and lockout conflict
-      warnings/toasts to `src/main/resources/templates/` as needed
-- [ ] T027 [US3] Run the US3 scenarios headless and stabilize until green (state-based waits
-      only) using `./mvnw verify -Dit.test=PermissionBoundaryE2ETest`
-- [ ] T028 [US3] Verify US3 independently and record results in
-      `specs/003-seed-data-e2e-testing/notes.md`
-
-**Checkpoint**: All permission boundaries and lockout guards proven end-to-end.
+- [ ] T034 [P] [US3] Create the `PermissionBoundaryE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: extends
+      `BasePage`, signs in as each persona, and asserts allow/deny outcomes (FR-010)
+- [ ] T035 [P] [US3] Create the lockout scenario helpers in
+      `src/test/java/com/allensandiego/adm/e2e/support/LockoutHelpers.java`: methods to attempt deletion
+      of the final role, removal of the last admin assignment, and deactivation of the last active user
+      (FR-011)
 
 ---
 
-## Phase 6: Polish & Cross-Cutting Concerns
+## Phase 6: Cross-Cutting Behaviors (FR-012 through FR-018)
 
-**Purpose**: Determinism, CI gating, and documentation across all stories
+**Purpose**: Implement cross-scenario behaviors that apply to every end-to-end test
 
-- [ ] T029 [P] Add the repeat-run determinism harness (20 consecutive suite runs must yield an
-      identical pass/fail result, SC-005) as a shell script under `scripts/` and record the
-      result in `specs/003-seed-data-e2e-testing/notes.md`
-- [ ] T030 [P] Add the suite runtime budget check in
-      `src/test/java/com/allensandiego/adm/e2e/SuiteDurationTest.java` asserting the full suite
-      completes in under 10 minutes (SC-004)
-- [ ] T031 [P] Document the JUnit XML output location and the CI gate wiring in `HELP.md`
-      (the Failsafe `*-failsafe.xml` reports under `target/failsafe-reports/` must fail the build
-      on any scenario failure, FR-017)
-- [ ] T032 Run the full `quickstart.md` validation end-to-end (`./mvnw verify` plus the manual
-      walkthrough) and record any gaps in `specs/003-seed-data-e2e-testing/notes.md`
-- [ ] T033 [P] Final review pass over `src/test/java/com/allensandiego/adm/e2e/` and
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`: no fixed sleeps,
-      order-independent scenarios, no CoreUI CSS class selectors, seeding disabled outside
-      test/dev, no secrets committed, and no `*E2ETest` class left outside the Failsafe
-      includes declared in `pom.xml`
+### Tests for Cross-Cutting Behaviors (write FIRST, ensure they FAIL before implementation) ⚠️
+
+- [ ] T036 [P] [Cross] Determinism test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2ETest.java`: 10 consecutive
+      application restarts with database reset produce identical seeded state (SC-003)
+- [ ] T037 [P] [Cross] Order-independence test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2ETest.java`: 20 consecutive
+      suite runs yield identical pass/fail results with zero flaky failures (SC-005)
+- [ ] T038 [P] [Cross] Artifact capture test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ArtifactE2ETest.java`: when a scenario fails,
+      then trace + screenshot are captured under `target/e2e-artifacts/<scenario>/` (FR-015, SC-007)
+- [ ] T039 [P] [Cross] Fail-fast test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ConnectivityE2ETest.java`: when the application
+      is not running or the configured address is unreachable, then the suite fails fast with an actionable
+      message (Edge Case 3)
+- [ ] T040 [P] [Cross] Headless/headed test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ModeE2ETest.java`: the suite runs headless by
+      default and identically when headed, with no differences in assertions (FR-014)
+
+### Implementation for Cross-Cutting Behaviors
+
+- [ ] T041 [P] [Cross] Create the `DeterminismE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2ETest.java`: runs repeated seeding
+      and suite executions to verify determinism (SC-003, SC-005)
+- [ ] T042 [P] [Cross] Create the `ArtifactE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ArtifactE2ETest.java`: triggers expected failures
+      and verifies artifacts are captured correctly (FR-015, SC-007)
+- [ ] T043 [P] [Cross] Create the `ConnectivityE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ConnectivityE2ETest.java`: tests fail-fast behavior
+      when the application is unreachable (Edge Case 3)
+- [ ] T044 [P] [Cross] Create the `ModeE2ETest` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ModeE2ETest.java`: verifies identical behavior
+      in headless and headed modes (FR-014)
+- [ ] T045 [P] [Cross] Create the suite runner utility in
+      `src/test/java/com/allensandiego/adm/e2e/support/SuiteRunner.java`: orchestrates the full E2E suite,
+      captures JUnit XML results for CI gating (FR-017)
+
+---
+
+## Phase 7: Polish & Integration
+
+**Purpose**: Cross-story validation, documentation, and final gate
+
+- [ ] T046 Run `./mvnw verify` and execute the full E2E suite; resolve failures until SC-001..SC-008 all pass
+- [ ] T047 Verify the seeded dataset includes at least: a fully-privileged administrator, one limited user,
+      and one deactivated account, each with documented credentials (FR-002)
+- [ ] T048 Confirm the suite drives the application's actual production screens (CoreUI templates in `coreui/`)
+      and does not depend on separate test-only pages (FR-018)
+- [ ] T049 Update `specs/003-seed-data-e2e-testing/quickstart.md` with run commands for the E2E suite
+      (if this file exists, otherwise create it)
+- [ ] T050 Document the seeded credentials in `specs/003-seed-data-e2e-testing/data-model.md` and ensure
+      they are test-only and never used in production
 
 ---
 
 ## Dependencies & Execution Order
 
+### Feature Dependencies
+
+- **Feature 001 (RBAC User Management)**: MUST be complete before this feature begins
+  - Entities: `Permission`, `Role`, `User`, `RolePermission`, `UserRole`
+  - Services: `EffectivePermissionService`, `GuardrailService`
+  - Screens: Permission catalog, role management, user management screens
+- **Feature 002 (JDBC User Authentication)**: MUST be complete before this feature begins
+  - Sign-in pipeline with hashed credentials (BCrypt)
+  - Account status handling (ACTIVE/INACTIVE)
+
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: No dependencies — can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion — BLOCKS all user stories
-- **User Stories (Phase 3+)**: All depend on Foundational completion
-  - US1 (P1) → US2 (P2) → US3 (P3) recommended, but all are independently testable
-- **Polish (Final Phase)**: Depends on all desired user stories being complete
-
-### User Story Dependencies
-
-- **US1 (P1)**: Can start after Foundational — no dependency on other stories; supplies the
-  baseline that US2/US3 assert against
-- **US2 (P2)**: Can start after Foundational — requires US1's personas to sign in and drive
-  journeys
-- **US3 (P3)**: Can start after Foundational — requires US1's personas and the Phase 2 harness;
-  independently testable
-
-### Within Each User Story
-
-- Scenarios written first and demonstrated failing, then stabilized to green
-- Seeder content before the idempotency test; selectors/testids before stabilization
-- Tasks sharing one file (T011–T014 seeder, T018–T020 `AdminJourneysE2ETest`, T024–T025
-  `PermissionBoundaryE2ETest`) are sequential by construction and never marked `[P]`
-- Story verified independently before moving to the next priority
+- **Phase 1 (Setup)**: No dependencies — can start immediately
+- **Phase 2 (Seed Data)**: Depends on Feature 001 entities and services being complete
+- **Phase 3-5 (User Stories)**: All depend on Phase 2 seed data implementation
+- **Phase 6 (Cross-Cutting)**: Depends on Phases 3-5 scenarios being implemented
+- **Phase 7 (Polish)**: Depends on all desired phases being complete
 
 ### Parallel Opportunities
 
-- Phase 1: T002/T003/T004/T005 run in parallel (different files)
-- Phase 2: T007/T009/T010 run in parallel (different support files); T008 follows T007
-- Phase 3: T015 is a distinct test file but depends on the completed seeder, so it is not `[P]`
-- US2: T017 (`AuthE2ETest`) and T018 (`AdminJourneysE2ETest`) run in parallel (different
-  files); T019/T020 follow in the same file
-- US3: T024 starts the boundary class; T025 continues it — not parallel. US3 work may be
-  interleaved with US2 by a second developer, but it does not start until its own phase opens
-- Polish: T029/T030/T031/T033 run in parallel (different files)
+- T001-T007 in Setup can run together
+- T008-T014 in Seed Data can run together (sequential chain within the seeder)
+- T015-T018 (US1), T019-T027 (US2), T028-T035 (US3) can run in parallel after seed data lands
+- T036-T045 in Cross-Cutting can run together
+- T046-T050 in Polish are sequential validation steps
+
+### Within Each User Story
+
+- Tests MUST be written and FAIL before implementation
+- Support classes (page objects, helpers) before scenario tests
+- Scenario tests can run in parallel once support is ready
 
 ---
 
-## Parallel Example: User Story 2
+## Success Criteria Validation
 
-```bash
-# Launch the independent scenario files together:
-Task: "Implement sign-in scenarios E2E-AUTH-01/02/03 in src/test/java/com/allensandiego/adm/e2e/AuthE2ETest.java"
-Task: "Implement permission-journey scenarios E2E-PERM-01/02 in src/test/java/com/allensandiego/adm/e2e/AdminJourneysE2ETest.java"
-
-# Support layer built together in Phase 2:
-Task: "E2EConfig in src/test/java/com/allensandiego/adm/e2e/support/E2EConfig.java"
-Task: "FailureArtifacts in src/test/java/com/allensandiego/adm/e2e/support/FailureArtifacts.java"
-Task: "RunUniqueData in src/test/java/com/allensandiego/adm/e2e/support/RunUniqueData.java"
-```
+| Criterion | Task(s) | Verification |
+|-----------|---------|--------------|
+| SC-001: 100% of core admin journeys exercised | T019-T023, T024-T027 | Run `AuthE2ETest` and `AdminJourneysE2ETest`; all pass |
+| SC-002: Dual-sided authorization testing | T028-T030, T029, T034 | Run `PermissionBoundaryE2ETest`; allow/deny pairs both pass |
+| SC-003: Zero duplicates across restarts | T013, T036 | Run seeder 10 times; verify identical counts and values |
+| SC-004: Suite completes in under 10 minutes | T046 | Measure total suite runtime on standard dev machine |
+| SC-005: Deterministic results (20 runs) | T037 | Run suite 20 times; verify identical pass/fail results |
+| SC-006: Single command execution | T049 | Document `./mvnw verify -Pe2e` or equivalent |
+| SC-007: Artifacts on failure | T038, T042 | Trigger a known failure; verify trace + screenshot captured |
+| SC-008: Lockout guardrails proven blocked | T031-T033 | Run lockout scenarios; verify 409 errors and no state change |
 
 ---
 
 ## Implementation Strategy
 
-### MVP First (User Story 1 Only)
+### MVP First (Seed Data Only)
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL — blocks all stories)
-3. Complete Phase 3: User Story 1 (seeded baseline)
-4. **STOP and VALIDATE**: T015 idempotency/confinement test green; 10 restarts identical
-5. Deploy/demo if ready
+1. Complete Phase 1: Setup (E2E harness)
+2. Complete Phase 2: Seed Data implementation
+3. **STOP and VALIDATE**: run seeder twice, verify identical dataset, no duplicates
+4. Deploy/demo seed data if ready
 
 ### Incremental Delivery
 
-1. Setup + Foundational → seeder mechanism + browser harness ready
-2. US1 → deterministic baseline → Test → MVP
-3. US2 → sign-in + admin journeys green → Test → Demo
-4. US3 → boundaries + lockout guards green → Test → Demo
-5. Polish → determinism, runtime budget, CI gate, docs
+1. Setup + Seed Data → foundation ready
+2. US1 (Sign-In Journeys) → validate authentication flows
+3. US2 (Core Admin Journeys) → validate permission/role/user management
+4. US3 (Permission Boundaries) → validate security guardrails
+5. Cross-Cutting behaviors → deterministic, artifact-capturing suite
 
 ### Parallel Team Strategy
 
-With multiple developers, once Foundational is done: Developer A = US1, Developer B = US2,
-Developer C = US3. US2/US3 depend on US1's personas, so coordinate the baseline first or run
-US1 lead.
+1. Complete Setup + Seed Data together
+2. Then:
+   - Developer A: US1 (Sign-In scenarios)
+   - Developer B: US2 (Admin journeys), after seed data
+   - Developer C: US3 (Boundaries), after US2
+3. Stories integrate through shared seeded state — run Phase 6 before final validation
 
 ---
 
 ## Notes
 
 - [P] tasks = different files, no dependencies
-- [Story] label maps each task to a specific user story for traceability
-- Constitution Principle IV: every protected boundary MUST assert both the permitted (success)
-  and unauthorized (refused) sides — covered by T017/T018/T024/T025
-- T001 gates the entire suite: without the explicit `**/*E2ETest.java` Failsafe include, every
-  scenario in this feature is silently skipped and `./mvnw verify` reports a false pass
-- Failsafe selects a single class with `-Dit.test=<Class>`, not `-Dtest=` (T022, T027)
-- SC-003 requires 10 seeding passes; SC-004 requires the suite under 10 minutes; SC-005 requires
-  20 identical suite runs
-- Commit after each task or logical group; stop at checkpoints to validate stories
-- Avoid: fixed sleeps, CSS-class selectors, shared mutable state, cross-story dependencies that
-  break independence
+- [Story] label maps a task to its user story for traceability
+- Each user story is independently completable and testable
+- Verify tests fail before implementing; commit after each task or logical group
+- Stop at any checkpoint to validate a story independently
+- All paths use the real base package `com.allensandiego.adm`
+- E2E tests use Playwright with Chromium (single browser focus)
+- Seeded credentials are test-only, documented, and never used in production
+- Passwords stored hashed (BCrypt) via feature 002 authentication model
+- Standard developer workstation (8GB RAM, 4 cores) and CI runners can host headless Chromium
+
+(End of file - total 365 lines)

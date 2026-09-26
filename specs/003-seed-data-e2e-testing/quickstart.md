@@ -1,14 +1,14 @@
 # Quickstart: Seed Data & End-to-End Testing
 
 **Date**: 2026-09-26 (refreshed) | Validates: [spec.md](spec.md) · [contracts/](contracts/README.md) ·
-[data-model.md](data-model.md)
+[data-model.md](data-model.md), constitution Principles I-IV
 
 ## Prerequisites
 
-- JDK 21 (satisfies the constitution's 17+ requirement)
+- JDK 21 (satisfies constitution Principle III: Java 17+ LTS)
 - Maven 3.9+ or the checked-in wrapper `./mvnw`
-- A headless-capable OS (developer workstation or CI runner)
-- No external database — embedded H2 with Hibernate-managed schema (constitution v2.0.0)
+- A headless-capable OS (developer workstation or CI runner; minimum 8GB RAM, 4 cores)
+- No external database — embedded H2 managed by Hibernate (constitution Principle III: ddl-auto schema management)
 
 ## One-time setup
 
@@ -45,13 +45,13 @@ On failure, inspect `target/e2e-artifacts/<scenario>/` for the trace and screens
 ## What the suite proves
 
 - **Seeding (US1)**: the personas in [contracts/seed-data.md](contracts/seed-data.md) exist and
-  are idempotent; restarting the app produces the same dataset with no duplicates (SC-003).
-- **Sign-in (FR-007)**: valid admin signs in; invalid credentials get one generic message;
-  the inactive persona is refused.
+  are idempotent; restarting the app produces the same dataset with no duplicates (SC-003, constitution Principle I).
+- **Sign-in (FR-007)**: valid admin signs in (feature 002 BCrypt); invalid credentials get one generic message;
+  the inactive persona is refused (SC-008 lockout).
 - **Admin journeys (FR-008/FR-009)**: permission, role, and user management plus role
-  assignment work in a real browser; effective permissions equal the union of assigned roles.
+  assignment work in a real browser (CoreUI templates); effective permissions equal the union of assigned roles.
 - **Boundaries (FR-010, SC-002)**: for each protected screen the admin succeeds and the
-  restricted persona is refused without seeing protected content.
+  restricted persona is refused without seeing protected content (constitution Principle II).
 - **Lockout guards (FR-011, SC-008)**: deleting the final protected role, removing the last
   administrator assignment, and deactivating the last administrator are all blocked.
 

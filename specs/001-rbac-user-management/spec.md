@@ -178,6 +178,7 @@ role, and confirming the user's derived access matches the role's permissions.
 - **SC-001**: An authorized administrator can complete the full end-to-end setup — create a
   permission, create a role with that permission, create a user, and assign the role — in
   under 5 minutes.
+- **GDPR Compliance**: All audit logs (FR-014) retained for minimum 7 years; data minimization enforced; right-to-erasure requests processable within 30 days; cross-border transfer controls documented.
 - **SC-002**: The most frequent task, assigning a role to an existing user, can be completed
   by an authorized administrator in under 2 minutes.
 - **SC-003**: Permission enforcement is dual-sided and complete: for every management screen,
@@ -197,6 +198,7 @@ role, and confirming the user's derived access matches the role's permissions.
 
 - Administrators are already authenticated by the existing login flow; the authentication
   mechanism itself is out of scope for this feature.
+- GDPR compliance applies: audit logging minimum 7 years, data minimization enforced, right-to-erasure processable within 30 days, cross-border transfer controls implemented.
 - A seeded "Super Admin" role with full access exists at launch and is the protected role
   referenced by FR-010.
 - The system serves a single organization — no multi-tenant or cross-organization data
