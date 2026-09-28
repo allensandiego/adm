@@ -47,7 +47,7 @@ permanently and irreversibly lock every operator out of the system.
 
 ### III. Tech Stack & Engine
 
-The server MUST be Java 17 LTS or newer built with Spring Boot. Thymeleaf MUST render
+The server MUST be Java 21 LTS or newer built with Spring Boot. Thymeleaf MUST render
 server-side views using the CoreUI Admin Bootstrap 5 template. For now, the database MUST be
 an embedded H2 database, managed by Hibernate (schema generated via ddl-auto) with Spring Data
 JPA for persistence. PostgreSQL has been removed from the stack; a persistent database target
