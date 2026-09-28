@@ -24,9 +24,26 @@
         }
       },
     },
+    "lmstudio-local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (mac)",
+      "options": {
+        "baseURL": "http://localhost:1234/v1"
+      },
+      "models": {
+        "qwen3.6-35b-a3b-mtp": {
+          "name": "Qwen3.6 35b a3b",
+          "limit": {
+            "context": 65536,
+            "input": 49162,
+            "output": 16384
+          }
+        }
+      }
+    },
     "lmstudio": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "LM Studio (local)",
+      "name": "LM Studio (amd)",
       "options": {
         "baseURL": "http://amd.lan:1234/v1"
       },
