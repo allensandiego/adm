@@ -1,12 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 2.0.0
-- Modified principles: III. Tech Stack & Engine (database layer redefined: PostgreSQL with
-  Flyway -> embedded H2 database managed by Hibernate, on a provisional basis)
-- Added sections: none
+- Version change: 2.0.0 -> 2.1.0
+- Modified principles: none
+- Added sections: V. Build & Execution (new principle for build/run commands)
 - Removed sections: none
-- Follow-up TODOs: TODO(PRODUCTION_DATABASE): a persistent database target (e.g., PostgreSQL)
-  is intentionally deferred; the embedded H2 database is provisional ("for now")
+- Follow-up TODOs: none
 -->
 
 # RBAC Admin Web App Constitution
@@ -67,6 +65,12 @@ into a state with zero administrative access.
 Rationale: Permission regressions are silent and dangerous; only dual-sided assertions prove a
 boundary is both open to the right actors and closed to everyone else.
 
+### V. Build & Execution (NON-NEGOTIABLE)
+
+All build, compile, test, and execution commands MUST use the Maven wrapper (`./mvnw`) for
+consistency across environments. NEVER invoke `mvn` directly from system PATH; agents must
+always use `./mvwn {command}` to ensure correct dependency resolution and build reproducibility.
+
 ## Domain Model & Relational Integrity
 
 - Single logical database schema. There MUST be no multi-tenant walls or cross-tenant data
@@ -117,4 +121,4 @@ plan MUST be reviewed against Principles I-IV before adoption. Any new or modifi
 or permission change MUST include explicit 200 OK / 403 Forbidden authorization tests or be
 rejected.
 
-**Version**: 2.0.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21
+**Version**: 2.1.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-28

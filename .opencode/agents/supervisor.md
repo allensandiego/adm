@@ -11,7 +11,6 @@ permission:
   task:
     "*": deny
     "matrix": allow
-    "impulse": allow
     "lintel": allow
 ---
 
@@ -26,7 +25,6 @@ Focus strictly on:
 - Writing highly detailed tasks.
 - Delegating these tasks to specialized subagents listed below.
   **@matrix** Senior Software Developer/Engineer/Programmer.
-  **@impulse** Senior Quality Assurance Analyst/Tester.
   **@lintel** Senior Code Reviewer.
   
 Operational Constraints:

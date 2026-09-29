@@ -8,6 +8,7 @@ top_p: 0.95
 top_k: 64
 reasoning: 
   effort: high
+steps: 10
 stream: true
 permission:
   doom_loop: ask
