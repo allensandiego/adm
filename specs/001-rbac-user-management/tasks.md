@@ -70,86 +70,87 @@ that every user story builds on
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T006 [P] Create the centralized permission catalog in
+- [ ] T006 [P] Create the centralized permission catalog in
       `src/main/java/com/allensandiego/adm/security/Permissions.java` — all 13 codes as
       constants (`permission.view/create/edit`, `user.view/create/edit/activate/roles.assign`,
       `role.view/create/edit/delete/permissions.edit`) exactly as listed in
       `contracts/README.md`; no magic strings anywhere else (FR-015, research D-2)
-- [X] T007 [P] Create `UserStatus` enum (`ACTIVE`, `INACTIVE`) in
+- [ ] T007 [P] Create `UserStatus` enum (`ACTIVE`, `INACTIVE`) in
       `src/main/java/com/allensandiego/adm/domain/UserStatus.java`
-- [X] T008 [P] Create the `Permission` entity in
+- [ ] T008 [P] Create the `Permission` entity in
       `src/main/java/com/allensandiego/adm/domain/Permission.java` — UUID v4 `id`, unique `code`,
-      `label`, `active`, UTC `createdAt`/`updatedAt` (data-model.md)
-- [X] T009 [P] Create the `Role` entity in
+      `label`, non-blank `path` (<=120), `active`, UTC `createdAt`/`updatedAt` (data-model.md)
+- [ ] T009 [P] Create the `Role` entity in
       `src/main/java/com/allensandiego/adm/domain/Role.java` — UUID v4 `id`, unique `name`,
       `description`, `isProtected`, JPA `@Version` `version`, UTC timestamps (D-3/D-4)
-- [X] T010 Create the `User` entity in
+- [ ] T010 Create the `User` entity in
       `src/main/java/com/allensandiego/adm/domain/User.java` — UUID v4 `id`, unique `username`,
-      `displayName`, `status` (`UserStatus`), `@Version` `version`, UTC timestamps — depends on
-      T007
-- [X] T011 Create the `RolePermission` mapping in
+      `displayName`, non-blank `password` matching `[a-zA-Z0-9._-]+`, `status` (`UserStatus`),
+      `@Version` `version`, UTC timestamps — depends on T007
+- [ ] T011 Create the `RolePermission` mapping in
       `src/main/java/com/allensandiego/adm/domain/RolePermission.java` with composite PK
       (`role_id`, `permission_id`) and cascade delete from both parents — depends on T008, T009
-- [X] T012 Create the `UserRole` assignment in
+- [ ] T012 Create the `UserRole` assignment in
       `src/main/java/com/allensandiego/adm/domain/UserRole.java` with composite PK
       (`user_id`, `role_id`) enforcing at most one assignment per pair (FR-007) — depends on
       T009, T010
-- [X] T013 [P] Create the supporting `AuditEvent` entity and `AuditAction` enum in
+- [ ] T013 [P] Create the supporting `AuditEvent` entity and `AuditAction` enum in
       `src/main/java/com/allensandiego/adm/domain/AuditEvent.java` and
       `src/main/java/com/allensandiego/adm/domain/AuditAction.java` — UUID `id`, nullable
       `actorId` FK -> `User`, `action`, `targetType`, `targetId`, `before`/`after` JSON,
       UTC `occurredAt`; supporting table only, not a sixth RBAC entity (FR-014, research D-5)
-- [X] T014 Create `PermissionRepository` in
+- [ ] T014 Create `PermissionRepository` in
       `src/main/java/com/allensandiego/adm/domain/PermissionRepository.java` with
       `existsByCode`, paged `findAll`, and the effective-permission projection query — depends
       on T008
-- [X] T015 Create `RoleRepository` in
+- [ ] T015 Create `RoleRepository` in
       `src/main/java/com/allensandiego/adm/domain/RoleRepository.java` with `existsByName`,
       `countByIsProtectedTrue`, and active-permission lookups — depends on T009
-- [X] T016 Create `UserRepository` in
+- [ ] T016 Create `UserRepository` in
       `src/main/java/com/allensandiego/adm/domain/UserRepository.java` with
       `existsByUsername` and paged search — depends on T010
-- [X] T017 Create `RolePermissionRepository` in
+- [ ] T017 Create `RolePermissionRepository` in
       `src/main/java/com/allensandiego/adm/domain/RolePermissionRepository.java` —
       depends on T011
-- [X] T018 Create `UserRoleRepository` in
+- [ ] T018 Create `UserRoleRepository` in
       `src/main/java/com/allensandiego/adm/domain/UserRoleRepository.java` — depends on T012
-- [X] T019 Create `AuditEventRepository` in
+- [ ] T019 Create `AuditEventRepository` in
       `src/main/java/com/allensandiego/adm/domain/AuditEventRepository.java` — depends on T013
-- [X] T020 Implement `AuditService` in
+- [ ] T020 Implement `AuditService` in
       `src/main/java/com/allensandiego/adm/service/AuditService.java` exposing
       `record(actorId, action, targetType, targetId, before, after)` that appends an
       `AuditEvent` with a UTC `Instant.now()` — depends on T013, T019 (FR-014)
-- [X] T021 Implement `EffectivePermissionService` in
+- [ ] T021 Implement `EffectivePermissionService` in
       `src/main/java/com/allensandiego/adm/service/EffectivePermissionService.java` resolving
       `permissions_of(user) = union of active permissions across assigned roles` in a single
       query; `INACTIVE` users resolve to an empty set (FR-008, SC-005) — depends on T014, T015,
       T016, T017, T018
-- [X] T022 Implement `GuardrailService` in
+- [ ] T022 Implement `GuardrailService` in
       `src/main/java/com/allensandiego/adm/service/GuardrailService.java` with
       `isLastProtectedRole(roleId)`, `wouldRemoveLastProtectedAssignment(userId, roleId)`, and
       `isLastActiveProtectedUser(userId)` backing G1/G2/G3 — depends on T015, T016, T018
       (FR-010, research D-3)
-- [X] T023 Implement `PermissionResolver` in
+- [ ] T023 Implement `PermissionResolver` in
       `src/main/java/com/allensandiego/adm/security/PermissionResolver.java` resolving the
       current principal's effective permission set per request via
       `EffectivePermissionService` — depends on T021 (research D-1)
-- [X] T024 Create `SecurityConfig` in
+- [ ] T024 Create `SecurityConfig` in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`: a
       `SecurityFilterChain` bean, `permitAll` only for `/login`, `/css/**`, `/js/**`,
       `/assets/**`, `/error`, and deny-by-default
       `authorizeHttpRequests(...).anyRequest().access(<AuthorizationManager backed by
       PermissionResolver>)` so permissions resolve BEFORE controller dispatch — depends on
       T006, T023 (FR-011, constitution Principle II, research D-1)
-- [X] T025 Expose resolved permissions to the view layer in
+- [ ] T025 Expose resolved permissions to the view layer in
       `src/main/java/com/allensandiego/adm/security/PermissionViewModel.java` — a Thymeleaf
       `@ControllerAdvice`/argument resolver that puts the permission set on the request so
       fragments render only permitted menu items and buttons; cosmetic only, never the security
       boundary — depends on T023 (research D-2)
-- [X] T026 Implement the idempotent `DataSeeder` in
+- [ ] T026 Implement the idempotent `DataSeeder` in
       `src/main/java/com/allensandiego/adm/config/DataSeeder.java`: upsert all 13 permission
-      codes from T006, the protected "Super Admin" role carrying every code, and one seeded
-      administrator user; safe on every startup — depends on T006, T014, T015, T016, T020
+      codes from T006 with their paths, the protected "Super Admin" role carrying every code, and
+      one seeded administrator user with a password from `app.seed.admin-password`; safe on every
+      startup — depends on T006, T014, T015, T016, T020
       (research D-7, spec Assumptions)
 
 **Checkpoint**: Entities, repositories, permission resolution, and the fail-closed seam are
@@ -187,11 +188,11 @@ refused the Permissions screen.
 
 - [ ] T030 [P] [US1] Create the validated `PermissionForm` record in
       `src/main/java/com/allensandiego/adm/web/form/PermissionForm.java` with Jakarta Bean
-      Validation on `code` (non-blank, <=80, pattern) and `label` (non-blank, <=120) (FR-012,
-      research D-8)
+      Validation on `code` (non-blank, <=80, pattern), `label` (non-blank, <=120), and `path`
+      (non-blank, <=120) (FR-012, research D-8)
 - [ ] T031 [US1] Implement `PermissionService` in
       `src/main/java/com/allensandiego/adm/service/PermissionService.java`: paged list, detail,
-      create with duplicate detection, update `label`/`active` only, and an `AuditService`
+      create with duplicate detection, update `label`/`path`/`active`, and an `AuditService`
       call per mutation — depends on T014, T020, T030 (FR-001/FR-002/FR-003)
 - [ ] T032 [US1] Implement `PermissionController` in
       `src/main/java/com/allensandiego/adm/web/PermissionController.java` with the five
@@ -202,10 +203,10 @@ refused the Permissions screen.
       search, paging, and an active/inactive status badge on each row
 - [ ] T034 [P] [US1] Create the permission form view in
       `src/main/resources/templates/permissions/form.html` with inline validation errors and a
-      summary block for a rejected submission
+      summary block for a rejected submission, including the path field
 - [ ] T035 [P] [US1] Create the permission detail view in
-      `src/main/resources/templates/permissions/detail.html` showing `code`, `label`, active
-      state, and the deactivate/reactivate action
+      `src/main/resources/templates/permissions/detail.html` showing `code`, `label`, `path`,
+      active state, and the deactivate/reactivate action
 - [ ] T036 [P] [US1] Add the Permissions sidebar entry and its create button to
       `src/main/resources/templates/fragments/sidebar.html`, rendered only when
       `permission.view`/`permission.create` are present in the resolved set (research D-2)
@@ -302,8 +303,8 @@ demoted or deactivated.
 - [ ] T052 [P] [US3] Service tests in
       `src/test/java/com/allensandiego/adm/service/UserServiceTests.java`: blank and duplicate
       usernames rejected, username pattern `[a-zA-Z0-9._-]+` and <=64 enforced, display name
-      non-blank <=120, deactivation leaves assignments stored, reactivation restores access
-      (FR-006, FR-012)
+      non-blank <=120, password validation `[a-zA-Z0-9._-]+` enforced, deactivation leaves
+      assignments stored, reactivation restores access (FR-006, FR-012)
 - [ ] T053 [P] [US3] Contract tests in
       `src/test/java/com/allensandiego/adm/web/UserControllerTests.java` covering all seven
       endpoints in `contracts/users.md` including 404 for an unknown id
@@ -321,15 +322,16 @@ demoted or deactivated.
 
 - [ ] T056 [P] [US3] Create the validated `UserForm` record in
       `src/main/java/com/allensandiego/adm/web/form/UserForm.java` (`username` non-blank <=64
-      matching `[a-zA-Z0-9._-]+`, `displayName` non-blank <=120) — depends on T030
+      matching `[a-zA-Z0-9._-]+`, `displayName` non-blank <=120, `password` non-blank matching
+      `[a-zA-Z0-9._-]+`) — depends on T030
 - [ ] T057 [P] [US3] Create the `UserRolesForm` record in
       `src/main/java/com/allensandiego/adm/web/form/UserRolesForm.java` carrying the full
       submitted set of role ids for POST-replace semantics — depends on T030
 - [ ] T058 [US3] Implement `UserService` in
       `src/main/java/com/allensandiego/adm/service/UserService.java`: paged searchable list,
-      detail with effective permissions, create with duplicate detection, edit display name
-      under optimistic locking, and activate/deactivate guarded by G3 — depends on T016, T020,
-      T022, T056 (FR-006, FR-008)
+      detail with effective permissions, create with duplicate detection and initial password
+      storage per data-model.md, edit display name under optimistic locking, and activate/deactivate
+      guarded by G3 — depends on T016, T020, T022, T056 (FR-006, FR-008)
 - [ ] T059 [US3] Implement `UserRoleService` in
       `src/main/java/com/allensandiego/adm/service/UserRoleService.java`: replace the user's
       whole assignment set, reject unknown role ids, refuse self-demotion and any removal that
@@ -343,7 +345,8 @@ demoted or deactivated.
       `src/main/resources/templates/users/list.html` with search, paging, status badges, and
       assigned-role chips
 - [ ] T062 [P] [US3] Create the user form view in
-      `src/main/resources/templates/users/form.html` with inline validation errors
+      `src/main/resources/templates/users/form.html` with inline validation errors including
+      the password field
 - [ ] T063 [P] [US3] Create the user detail view in
       `src/main/resources/templates/users/detail.html` showing account fields, status, assigned
       roles, the consolidated effective permission list, the role-assignment multi-select, and
@@ -486,5 +489,4 @@ Task: "Create the role-permission editor in src/main/resources/templates/roles/p
   `org.springframework.security:spring-security-test` (see T001)
 - `audit_event` is a supporting sixth table required by FR-014, not a sixth RBAC entity — see
   the Complexity Tracking table in `plan.md`
-- Feature `002` will add `users.password_hash` and the `auth_event` table; do not create either
-  here
+- Feature `002` will add the auth_event table and full login authentication pipeline; user password storage is initialized here per data-model.md

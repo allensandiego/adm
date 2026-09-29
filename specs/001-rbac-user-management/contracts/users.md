@@ -6,7 +6,7 @@
 |--------|-------------------|-----------------|----------------------------------|----------------------------------|--------------------------------|
 | GET    | /users            | user.view       | List users (paged, searchable)   | 200, list with status/roles      | 403 if lacking permission      |
 | GET    | /users/new        | user.create     | New-user form                    | 200, form                        | 403 if lacking permission      |
-| POST   | /users            | user.create     | Create a user                    | redirect to detail               | 400 blank/duplicate username   |
+| POST   | /users            | user.create     | Create a user                    | redirect to detail               | 400 blank/duplicate username or invalid password |
 | GET    | /users/{id}       | user.view       | User detail + effective perms    | 200, detail                      | 404 unknown; 403 if lacking    |
 | POST   | /users/{id}/edit  | user.edit       | Edit display name                | redirect to detail               | 400 invalid; 403; 409 conflict |
 | POST   | /users/{id}/status| user.activate   | Activate/Deactivate user         | redirect to detail               | 409 guardrail (G3)              |
@@ -16,6 +16,7 @@
 
 - Detail shows account fields, status, assigned roles, and the consolidated effective
   permission list derived from assigned roles (union, active permissions only).
+- Passwords are set on creation and not disclosed on detail views.
 - Effective view updates consistently regardless of the screen it is opened from (FR-009).
 
 ## Role assignment (FR-007)
@@ -32,3 +33,9 @@
 - Guardrail G3: deactivating the last ACTIVE user holding a protected role → **409**
   "Cannot deactivate the final administrator". No change.
 - `INACTIVE -> ACTIVE`: restores access consistent with current assignments.
+
+## Validation (FR-006, FR-012)
+
+- username: non-blank, `[a-zA-Z0-9._-]+`, <=64 chars, unique.
+- password: non-blank, `[a-zA-Z0-9._-]+`.
+- displayName: non-blank, <=120 chars.

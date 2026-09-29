@@ -160,12 +160,12 @@ role, and confirming the user's derived access matches the role's permissions.
 
 ### Key Entities *(include if feature involves data)*
 
-- **User**: A person with a login account; carries account fields (name, username, status)
-  that determine whether they can act in the system.
+- **User**: A person with a login account; carries account fields (name, username, password,
+  status) that determine whether they can act in the system.
 - **Role**: A named, reusable bundle of permissions representing a policy (e.g., "Report
   Viewer"); contains a visible name and the list of permissions it carries.
-- **Permission**: A single, named capability in the system (e.g., "Export Reports"); the
-  atomic unit that roles grant and users ultimately receive.
+- **Permission**: A single, named capability in the system (e.g., "Export Reports") with an
+  associated protected path; the atomic unit that roles grant and users ultimately receive.
 - **Role-Permission**: The association defining which permissions a role carries; changing
   it alters the effective access of every user holding the role.
 - **User-Role**: The association defining which roles a user has been assigned; together
@@ -207,6 +207,5 @@ role, and confirming the user's derived access matches the role's permissions.
   entire system; the catalog is the single source of truth.
 - Standard web-app responsiveness applies: management screens load and respond within a
   couple of seconds under normal usage.
-- Password management and self-service user features are out of scope; this feature covers
-  account administration by administrators only.
+- Password self-service and reset features are out of scope; administrator-provided passwords at user creation are stored per data-model.md.
 - Management screens provide search and paging for large lists.

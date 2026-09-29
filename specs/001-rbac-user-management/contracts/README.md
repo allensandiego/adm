@@ -21,21 +21,21 @@ appropriate client/security status with a user-facing message page or inline val
 
 ## Permission catalog (centralized, FR-015)
 
-| code                    | label                    | grants                                          |
-|-------------------------|--------------------------|-------------------------------------------------|
-| permission.view         | View Permissions         | list + detail screens                           |
-| permission.create       | Create Permission        | create screen/form                              |
-| permission.edit         | Edit Permission          | label/active editing                            |
-| user.view               | View Users               | list + detail screens                           |
-| user.create             | Create User              | create screen/form                              |
-| user.edit               | Edit User                | edit account fields                             |
-| user.activate           | Activate/Deactivate User | status change                                   |
-| user.roles.assign       | Assign User Roles        | add/remove role assignments                     |
-| role.view               | View Roles               | list + detail screens                           |
-| role.create             | Create Role              | create screen/form                              |
-| role.edit               | Edit Role                | rename role                                     |
-| role.delete             | Delete Role              | delete role (guarded by G1)                     |
-| role.permissions.edit   | Edit Role Permissions    | role-permission editor                          |
+| code                    | label                    | path              | grants                                          |
+|-------------------------|--------------------------|-------------------|-------------------------------------------------|
+| permission.view         | View Permissions         | /permissions      | list + detail screens                           |
+| permission.create       | Create Permission        | /permissions/new  | create screen/form                              |
+| permission.edit         | Edit Permission          | /permissions/{id}/edit | label/active editing                        |
+| user.view               | View Users               | /users            | list + detail screens                           |
+| user.create             | Create User              | /users/new        | create screen/form                              |
+| user.edit               | Edit User                | /users/{id}/edit  | edit account fields                             |
+| user.activate           | Activate/Deactivate User | /users/{id}/status| status change                                   |
+| user.roles.assign       | Assign User Roles        | /users/{id}/roles | add/remove role assignments                     |
+| role.view               | View Roles               | /roles            | list + detail screens                           |
+| role.create             | Create Role              | /roles/new        | create screen/form                              |
+| role.edit               | Edit Role                | /roles/{id}/edit  | rename role                                     |
+| role.delete             | Delete Role              | /roles/{id}/delete| delete role (guarded by G1)                     |
+| role.permissions.edit   | Edit Role Permissions    | /roles/{id}/permissions | role-permission editor                      |
 
 Seed: the protected "Super Admin" role is granted every code above on startup (idempotent
 seeder, see Quickstart).

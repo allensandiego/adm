@@ -6,14 +6,14 @@
 |--------|------------------|---------------------|----------------------------------|----------------------------------|--------------------------------|
 | GET    | /permissions     | permission.view      | List all permissions (paged)     | 200, list with status badges     | 403 if lacking permission      |
 | GET    | /permissions/new | permission.create    | New-permission form              | 200, form                        | 403 if lacking permission      |
-| POST   | /permissions     | permission.create    | Create a permission              | redirect to detail               | 400 duplicate/blank code/label |
+| POST   | /permissions     | permission.create    | Create a permission              | redirect to detail               | 400 duplicate/blank code/label/path |
 | GET    | /permissions/{id} | permission.view     | Permission detail                | 200, detail with active state   | 404 unknown id; 403 if lacking |
-| POST   | /permissions/{id}/edit | permission.edit | Update label or active flag | redirect to detail         | 400 invalid; 403 if lacking     |
+| POST   | /permissions/{id}/edit | permission.edit | Update label, path, or active flag | redirect to detail         | 400 invalid; 403 if lacking     |
 
 ## Rules
 
 - `code` is immutable after creation (a change would break existing role grants / audit
-  trail); only `label` and `active` are editable.
+  trail); only `label`, `path`, and `active` are editable.
 - Creating/deleting permissions is by code uniqueness; duplicate code → 400 with "code
   already exists".
 - Deactivating a permission (`active=false`) keeps existing role grants stored but removes
@@ -27,3 +27,4 @@
 
 - code: non-blank, `[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*`, <=80 chars, unique.
 - label: non-blank, <=120 chars.
+- path: non-blank, <=120 chars.
