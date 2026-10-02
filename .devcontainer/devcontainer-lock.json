@@ -1,0 +1,9 @@
+{
+  "features": {
+    "ghcr.io/devcontainers-extra/features/springboot-sdkman:2": {
+      "version": "2.0.17",
+      "resolved": "ghcr.io/devcontainers-extra/features/springboot-sdkman@sha256:92a0dacade34ba965b913d957a76238fa49e85f364c36e681257d53a39d8f586",
+      "integrity": "sha256:92a0dacade34ba965b913d957a76238fa49e85f364c36e681257d53a39d8f586"
+    }
+  }
+}
