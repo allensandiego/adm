@@ -8,7 +8,9 @@
 - JDK 21 (satisfies constitution Principle III: Java 21 LTS or newer)
 - Maven 3.9+ or the checked-in wrapper `./mvnw`
 - A headless-capable OS (developer workstation or CI runner; minimum 8GB RAM, 4 cores)
-- No external database — embedded H2 managed by Hibernate (constitution Principle III: ddl-auto schema management)
+- PostgreSQL must be running and accessible using `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD`
+  (see `src/main/resources/application.properties`); startup SQL scripts drop and recreate
+  the application tables before loading seed data.
 
 ## One-time setup
 

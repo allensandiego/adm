@@ -41,8 +41,8 @@ platform unknowns to research (fresh repository; single stack prescribed).
   holding a protected role. Rejected with a conflict-style error; no data change.
 - **Rationale**: Constitution Principle II and Domain Model ("application-level guardrails";
   lockout-critical rows "MUST NOT be cascade-deletable").
-- **Alternatives considered**: DB-level triggers/constraints — rejected: H2 trigger support is
-  limited and policy belongs in the application per the constitution.
+- **Alternatives considered**: DB-level triggers — rejected: policy belongs in the application
+  per the constitution; relational constraints remain appropriate for data integrity.
 
 ### D-4: Concurrency — optimistic locking
 
@@ -74,11 +74,11 @@ platform unknowns to research (fresh repository; single stack prescribed).
 
 ### D-7: Schema management
 
-- **Decision**: Embedded H2 with Hibernate `ddl-auto` generating the schema at startup; no
-  migration framework in play (Flyway removed in constitution v2.0.0). Seed data (Super Admin
-  role, its user, base permissions) applied via an idempotent application-level seeder.
-- **Rationale**: Constitution v2.0.0 (H2 + Hibernate-managed schema); production database is
-  deferred.
+- **Decision**: PostgreSQL with Hibernate `ddl-auto=none`; `drop.sql`, `schema.sql`, and
+  `data.sql` initialize the schema and seed data at startup. No migration framework is in
+  play.
+- **Rationale**: Constitution Principle III requires PostgreSQL and SQL-managed schema
+  initialization.
 - **Alternatives considered**: None — stack is fixed.
 
 ### D-8: Validation

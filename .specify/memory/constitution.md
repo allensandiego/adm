@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 -> 2.1.0
-- Modified principles: none
-- Added sections: V. Build & Execution (new principle for build/run commands)
+- Version change: 2.1.0 -> 3.0.0
+- Modified principles: III. Tech Stack & Engine (PostgreSQL and SQL-managed schema)
+- Added sections: none
 - Removed sections: none
 - Follow-up TODOs: none
 -->
@@ -46,11 +46,10 @@ permanently and irreversibly lock every operator out of the system.
 ### III. Tech Stack & Engine
 
 The server MUST be Java 21 LTS or newer built with Spring Boot. Thymeleaf MUST render
-server-side views using the CoreUI Admin Bootstrap 5 template. For now, the database MUST be
-an embedded H2 database, managed by Hibernate (schema generated via ddl-auto) with Spring Data
-JPA for persistence. PostgreSQL has been removed from the stack; a persistent database target
-is deferred and MUST NOT be introduced without a formal amendment. All primary keys MUST be
-UUIDs (v4 or v7).
+server-side views using the CoreUI Admin Bootstrap 5 template. PostgreSQL MUST be used for
+persistence through Spring Data JPA and JDBC. Hibernate schema generation MUST be disabled;
+the SQL initialization scripts define and seed the schema. All primary keys MUST be UUIDs
+(v4 or v7).
 
 Jakarta Bean Validation MUST be applied to every inbound API payload and every data mutation;
 no unvalidated data MAY be written to the persistence layer.
@@ -121,4 +120,4 @@ plan MUST be reviewed against Principles I-IV before adoption. Any new or modifi
 or permission change MUST include explicit 200 OK / 403 Forbidden authorization tests or be
 rejected.
 
-**Version**: 2.1.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-28
+**Version**: 3.0.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-10-02

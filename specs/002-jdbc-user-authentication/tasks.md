@@ -30,7 +30,7 @@ testing of each story.
   `com.allensandiego`).
 - Main sources: `src/main/java/com/allensandiego/adm/`; tests:
   `src/test/java/com/allensandiego/adm/`; views: `src/main/resources/templates/`.
-- Config: `src/main/resources/application.properties` (embedded H2, Hibernate `ddl-auto`).
+- Config: `src/main/resources/application.properties` (PostgreSQL datasource, SQL-managed schema).
 - Static assets: `src/main/resources/static/` (CSS/JS copied from the vendored `coreui/`
   template at the repo root).
 
@@ -45,12 +45,12 @@ testing of each story.
 **Purpose**: Build dependencies, configuration, package skeleton, and audit event support for authentication
 
 - [ ] T001 Verify `pom.xml` already carries the required stack: feature 001's
-      `spring-boot-starter-security`, `spring-security-test`, `com.h2database:h2` (runtime),
+      `spring-boot-starter-security`, `spring-security-test`, `org.postgresql:postgresql` (runtime),
       plus `spring-boot-starter-web`, `spring-boot-starter-thymeleaf`,
       `spring-boot-starter-validation`, `spring-boot-starter-data-jpa`, and for tests
       `spring-boot-starter-test` — nothing additional needed beyond 001's stack
 - [ ] T002 [P] Confirm `src/main/resources/application.properties` has feature 001's settings:
-      embedded H2 datasource (`jdbc:h2:mem:adm`), `spring.jpa.hibernate.ddl-auto=update`,
+      PostgreSQL datasource, `spring.jpa.hibernate.ddl-auto=none`, SQL initialization scripts,
       `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080`, and
       `app.seed.admin-password` for the seeder (research D-7/D-8)
 - [ ] T003 [P] Create the test package skeleton `security/`, `guardrails/`, `service/`, `audit/`
@@ -93,13 +93,13 @@ that every user story builds on
 - [ ] T010 Create the `JdbcUserDetailsManager` bean in
       `src/main/java/com/allensandiego/adm/security/JdbcUserDetailsManager.java`:
       extend `JdbcUserDetailsManager`, override `usersByUsernameQuery()` and
-      `authoritiesByUsernameQuery()` with custom SQL against existing H2 tables:
+      `authoritiesByUsernameQuery()` with custom SQL against existing PostgreSQL tables:
       - users query: `(username, password_hash, enabled)` columns, `LOWER(u.username)=LOWER(?)` match
         (research D-1/D-7)
       - authorities query: role names via `user_roles` -> `roles`, same case-insensitive match
         (informational only, never used for authorization — research D-4)
       - call `setUsernameBasedPrimaryKey(false)` since users table uses UUID PKs
-      - inject the existing H2 `DataSource` from feature 001 (research D-1)
+      - inject the existing PostgreSQL `DataSource` from feature 001 (research D-1)
 - [ ] T011 Create `SecurityConfig` updates in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`:
       - add `AuthenticationManager` bean using `DaoAuthenticationProvider` with the new
@@ -402,4 +402,4 @@ Task: "Create sign-in screen view in src/main/resources/templates/login.html"
 - Test artifact names matter: Spring Security test dependency is
   `org.springframework.security:spring-security-test` (see T001)
 - `auth_event` is a supporting table required by FR-013; it does not affect the RBAC entities
-- Feature 002 depends on feature 001's `SecurityConfig`, `User` entity, and H2 datasource
+- Feature 002 depends on feature 001's `SecurityConfig`, `User` entity, and PostgreSQL datasource

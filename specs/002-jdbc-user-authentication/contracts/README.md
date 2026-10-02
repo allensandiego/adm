@@ -11,7 +11,7 @@ are HTTP redirects to the sign-in screen; authorization failures are the 403 pag
 
 ## Security conventions (fail-closed, constitution Principle II)
 
-- Authentication is Spring Security JDBC against the application's own H2 database (FR-002/
+- Authentication is Spring Security JDBC against the application's own PostgreSQL database (FR-002/
   FR-006). It establishes **identity only** (FR-010); authorization is never derived from
   the session's baked-in authorities.
 - Authorization is enforced per request by the middleware `AuthorizationManager` from the

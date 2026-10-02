@@ -29,7 +29,7 @@ testing of each story.
   `com.allensandiego`).
 - Main sources: `src/main/java/com/allensandiego/adm/`; tests:
   `src/test/java/com/allensandiego/adm/`; views: `src/main/resources/templates/`.
-- Config: `src/main/resources/application.properties` (embedded H2, Hibernate `ddl-auto`).
+- Config: `src/main/resources/application.properties` (PostgreSQL datasource, SQL-managed schema).
 - E2E test sources: `src/test/java/com/allensandiego/adm/e2e/`.
 - Static assets: `src/main/resources/static/` (CSS/JS copied from the vendored `coreui/`
   template at the repo root).

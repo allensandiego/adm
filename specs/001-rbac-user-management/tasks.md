@@ -30,7 +30,7 @@ testing of each story.
   `com.allensandiego`).
 - Main sources: `src/main/java/com/allensandiego/adm/`; tests:
   `src/test/java/com/allensandiego/adm/`; views: `src/main/resources/templates/`.
-- Config: `src/main/resources/application.properties` (embedded H2, Hibernate `ddl-auto`).
+- Config: `src/main/resources/application.properties` (PostgreSQL datasource, SQL-managed schema).
 - Static assets: `src/main/resources/static/` (CSS/JS copied from the vendored `coreui/`
   template at the repo root).
 
@@ -46,12 +46,12 @@ testing of each story.
 - [X] T001 Verify `pom.xml` already carries the RBAC stack and add nothing that is missing:
       `spring-boot-starter-web`, `spring-boot-starter-thymeleaf`,
       `spring-boot-starter-validation`, `spring-boot-starter-data-jpa`,
-      `spring-boot-starter-security`, `com.h2database:h2` (runtime), `org.projectlombok:lombok`
+      `spring-boot-starter-security`, `org.postgresql:postgresql` (runtime), `org.projectlombok:lombok`
       (optional), and for tests `spring-boot-starter-test` + `spring-security-test` — note the
       Spring Security test artifact is `org.springframework.security:spring-security-test`, NOT
       `spring-boot-starter-security-test`, which does not exist
-- [ ] T002 [P] Configure `src/main/resources/application.properties`: embedded H2 datasource
-      (`jdbc:h2:mem:adm`), `spring.jpa.hibernate.ddl-auto=update`,
+- [ ] T002 [P] Configure `src/main/resources/application.properties`: PostgreSQL datasource,
+      `spring.jpa.hibernate.ddl-auto=none`, SQL initialization scripts,
       `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080`, and
       `app.seed.admin-password` for the seeder (research D-7/D-8)
 - [ ] T003 [P] Create the main package skeleton `config/`, `domain/`, `security/`, `service/`,

@@ -48,8 +48,8 @@ Expected: all suites green, including:
    never distinguishes "unknown username" from "wrong password" (SC-002).
 7. Wrong-password 5× within the window → subsequent attempts are refused while the throttle
    is active, still showing only the generic message (FR-012).
-8. `.mvn/`-level H2 files or the console (if enabled) show `auth_event` rows for every
-   attempt and sign-out, none containing password data (FR-013).
+8. Query `auth_event` in the configured PostgreSQL database to verify rows for every attempt
+   and sign-out, with no password data (FR-013).
 
 ## Success-to-scenario mapping
 

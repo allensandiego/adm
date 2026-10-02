@@ -191,7 +191,7 @@ every protected screen yields both a success path and a refusal path.
 - Seeded data is activated only under test/development profiles; the default runtime remains
   free of test accounts.
 - The primary target browser is Chromium (single-engine focus per spec); Playwright supports headed/headless modes identically, no cross-browser requirements.
-- The test environment uses the embedded H2 database managed by Hibernate (constitution Principle III); schema auto-managed via ddl-auto, no manual reset required.
+- The test environment uses PostgreSQL (constitution Principle III); schema and seed data are initialized by the configured SQL scripts.
 - The application can be launched by the suite or pointed at an already-running instance via
   configuration.
 - Browser automation runs headless in continuous integration and headed locally, with no

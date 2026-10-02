@@ -18,12 +18,12 @@ mechanism, the browser-test harness, and how to keep the suite deterministic and
   profiles (`@Profile`). It upserts defined rows by natural key (username, role name,
   permission code) inside a transaction, using the same repositories/services as the
   application, and is safe to run on every startup.
-- **Rationale**: Constitution v2.0.0 uses Hibernate-managed H2 (no migration framework), and
-  FR-003/FR-004 require idempotent, environment-confined seeding. Reusing services avoids
-  bypassing guardrails and keeps validation in force.
+- **Rationale**: The constitution uses PostgreSQL with SQL-managed schema initialization (no
+  migration framework), while FR-003/FR-004 require idempotent, environment-confined E2E
+  seeding. Reusing services avoids bypassing guardrails and keeps validation in force.
 - **Alternatives considered**:
-  - `data.sql` / `import.sql` — rejected: fights Hibernate schema generation and cannot express
-    upsert semantics cleanly.
+  - `data.sql` / `import.sql` — rejected for E2E personas: they cannot provide profile-gated,
+    idempotent upsert semantics cleanly.
   - Flyway/Liquibase seed migrations — rejected: no migration framework in the stack.
   - Test-only `@Sql` scripts — rejected: not available to a normally running application, so
     headed/manual E2E and the quickstart could not use them.
@@ -63,8 +63,8 @@ mechanism, the browser-test harness, and how to keep the suite deterministic and
 - **Rationale**: FR-013 requires a single documented command from a fresh checkout, while the
   Edge Cases require pointing at an existing instance. One resolver covers both.
 - **Alternatives considered**: Always external (`mvn spring-boot:run` separately) — rejected:
-  two commands and manual readiness; Testcontainers — rejected: embedded H2, nothing to
-  containerize.
+  two commands and manual readiness; Testcontainers — rejected because developer and CI
+  environments provide the PostgreSQL service used by the application.
 
 ### D-5: Locators — role/label first, `data-testid` for non-semantic anchors
 

@@ -164,7 +164,7 @@ with its correct password, and confirming entry is refused.
 
 - Authentication is implemented with Spring Security JDBC authentication (the mechanism
   specified by the requester) reading account and authority data from the application's own
-  embedded H2 database, consistent with the project constitution's tech stack.
+  PostgreSQL database, consistent with the project constitution's tech stack.
 - Accounts are created and managed by administrators through the existing user administration
   capability; no self-registration, invite, or password-reset flow is in scope for this
   feature.

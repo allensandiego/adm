@@ -5,7 +5,7 @@
 ## Open questions addressed
 
 The feature spec mandated "use Spring Security JDBC" while the project's constitution
-mandates an existing five-entity RBAC/Hibernate/H2 model. Research resolved: (1) how JDBC
+mandates an existing five-entity RBAC/Hibernate/PostgreSQL model. Research resolved: (1) how JDBC
 authentication fits a non-default JPA-managed schema with UUID keys, (2) how to keep
 per-request permission freshness (constitution Principle II) while authenticating via JDBC,
 (3) the correct hashing + throttle + audit approaches for Spring Security 7 / Boot 4.x.
@@ -13,14 +13,14 @@ per-request permission freshness (constitution Principle II) while authenticatin
 ## D-1 JDBC authentication leg — `JdbcUserDetailsManager` with custom queries
 
 - **Decision**: Configure Spring Security JDBC authentication with
-  `JdbcUserDetailsManager` (a `UserDetailsService`) backed by the existing H2 `DataSource`,
+  `JdbcUserDetailsManager` (a `UserDetailsService`) backed by the existing PostgreSQL `DataSource`,
   using custom SQL against the application's own tables. Publish a `UserDetailsService`
   bean so Boot/Security auto-config uses it. `SecurityFilterChain` bean uses the lambda DSL
   (`authorizeHttpRequests`, `formLogin`, `logout`, `sessionManagement`); `.and()` and
   adapter classes are gone in Security 7.
 - **Rationale**: Satisfies the mandated mechanism ("Spring Security JDBC") and FR-002/FR-006
   (own database only). `JdbcUserDetailsManager` needs only a `DataSource`; the JDBC leg
-  performs no schema creation, so the Hibernate-managed schema (constitution III) is
+  performs no schema creation, so the SQL-managed schema (constitution III) is
   untouched.
 - **Details**:
   - `usersByUsernameQuery` must return columns in order `(username, password, enabled)`:
@@ -87,7 +87,7 @@ References: Spring Security 7 `password-storage.html`; OWASP Password Storage Ch
 - **Rationale**: Spring Security core has no first-class brute-force protection
   (`ConcurrentSessionControlAuthenticationStrategy`/`SessionRegistry` concern concurrent
   sessions only). A ~40-line in-memory registry is the standard, idiomatic choice for a
-  single-process embedded-H2 app (FR-012, SC-007): bounded, deterministic, no external
+  single-process application (FR-012, SC-007): bounded, deterministic, requires no additional
   service, and it does not confirm whether an account exists (the failure and the block are
   indistinguishable from wrong credentials).
 - **Mechanics**: block-before-increment (failures are recorded after a failed `matches`, but

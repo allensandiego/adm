@@ -7,8 +7,9 @@
 
 - JDK 21 (`pom.xml` `<java.version>`; constitution floor is Java 17 LTS)
 - Maven 3.8+ (or the IDE import of choice) — the wrapper `./mvnw` is committed
-- No external database — embedded H2 with Hibernate-managed schema is used (constitution
-  v2.0.0)
+- PostgreSQL must be running and accessible using `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD`
+  (see `src/main/resources/application.properties`); startup SQL scripts drop and recreate
+  the application tables before loading seed data.
 - CoreUI Admin Bootstrap 5 assets present in `src/main/resources/static/` (sourced from the
   vendored `coreui/` template) so screens render unstyled-free
 
