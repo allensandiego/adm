@@ -44,18 +44,18 @@ testing of each story.
 
 **Purpose**: Build dependencies, configuration, package skeleton, and audit event support for authentication
 
-- [X] T001 Verify `pom.xml` already carries the required stack: feature 001's
+- [ ] T001 Verify `pom.xml` already carries the required stack: feature 001's
       `spring-boot-starter-security`, `spring-security-test`, `com.h2database:h2` (runtime),
       plus `spring-boot-starter-web`, `spring-boot-starter-thymeleaf`,
       `spring-boot-starter-validation`, `spring-boot-starter-data-jpa`, and for tests
       `spring-boot-starter-test` — nothing additional needed beyond 001's stack
-- [X] T002 [P] Confirm `src/main/resources/application.properties` has feature 001's settings:
+- [ ] T002 [P] Confirm `src/main/resources/application.properties` has feature 001's settings:
       embedded H2 datasource (`jdbc:h2:mem:adm`), `spring.jpa.hibernate.ddl-auto=update`,
       `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080`, and
       `app.seed.admin-password` for the seeder (research D-7/D-8)
-- [X] T003 [P] Create the test package skeleton `security/`, `guardrails/`, `service/`, `audit/`
+- [ ] T003 [P] Create the test package skeleton `security/`, `guardrails/`, `service/`, `audit/`
       under `src/test/java/com/allensandiego/adm/` — depends on existing 001 structure
-- [X] T004 [P] Create the `LoginAttemptRegistry` in-memory throttle state manager in
+- [ ] T004 [P] Create the `LoginAttemptRegistry` in-memory throttle state manager in
       `src/main/java/com/allensandiego/adm/security/LoginAttemptRegistry.java`:
       `ConcurrentHashMap<String, AttemptWindow>` keyed by normalized username (trimmed, lower),
       storing first-attempt timestamp and failure count; evict after 15-minute window
@@ -70,27 +70,27 @@ that every user story builds on
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T005 [P] Create the `PasswordEncoder` wrapper in
+- [ ] T005 [P] Create the `PasswordEncoder` wrapper in
       `src/main/java/com/allensandiego/adm/security/PasswordEncoderWrapper.java`:
       delegate to `PasswordEncoderFactories.createDelegatingPasswordEncoder()` (BCrypt default),
       expose `encode()` and `matches()` methods, wire into `DaoAuthenticationProvider` via
       `setUserDetailsPasswordService(...)` for lazy re-hash on sign-in success (research D-2)
-- [X] T006 Create the `AuthEvent` entity in
+- [ ] T006 Create the `AuthEvent` entity in
       `src/main/java/com/allensandiego/adm/domain/AuthEvent.java`: UUID v4 `id`, nullable
       `username` (string, submitted account identifier), nullable `accountId` FK -> `User`,
       `outcome` enum (`SUCCESS`, `FAILURE`, `SIGNOUT`), UTC `occurredAt`; supporting table only,
       not an RBAC entity (data-model.md FR-013)
-- [X] T007 Create the `AuthEventOutcome` enum in
+- [ ] T007 Create the `AuthEventOutcome` enum in
       `src/main/java/com/allensandiego/adm/domain/AuthEventOutcome.java`: `SUCCESS`,
       `FAILURE`, `SIGNOUT` — no other values (FR-013, data-model.md)
-- [X] T008 Create `AuthEventRepository` in
+- [ ] T008 Create `AuthEventRepository` in
       `src/main/java/com/allensandiego/adm/domain/AuthEventRepository.java` with
       `findAllByOutcome`, paged queries for security review — depends on T006 (FR-013/SC-008)
-- [X] T009 Implement `AuthEventService` in
+- [ ] T009 Implement `AuthEventService` in
       `src/main/java/com/allensandiego/adm/service/AuthEventService.java` exposing
       `record(username, accountId, outcome)` that appends an `AuthEvent` with a UTC timestamp;
       never log passwords or hashes (FR-013/SC-008) — depends on T006, T007, T008
-- [X] T010 Create the `JdbcUserDetailsManager` bean in
+- [ ] T010 Create the `JdbcUserDetailsManager` bean in
       `src/main/java/com/allensandiego/adm/security/JdbcUserDetailsManager.java`:
       extend `JdbcUserDetailsManager`, override `usersByUsernameQuery()` and
       `authoritiesByUsernameQuery()` with custom SQL against existing H2 tables:
@@ -100,7 +100,7 @@ that every user story builds on
         (informational only, never used for authorization — research D-4)
       - call `setUsernameBasedPrimaryKey(false)` since users table uses UUID PKs
       - inject the existing H2 `DataSource` from feature 001 (research D-1)
-- [X] T011 Create `SecurityConfig` updates in
+- [ ] T011 Create `SecurityConfig` updates in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`:
       - add `AuthenticationManager` bean using `DaoAuthenticationProvider` with the new
         `JdbcUserDetailsManager` and `PasswordEncoderWrapper` (research D-2)
@@ -127,28 +127,28 @@ a generic "invalid credentials" message appears without revealing which field wa
 
 ### Tests for User Story 1 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [X] T012 [P] [US1] Dual-sided authorization tests in
+- [ ] T012 [P] [US1] Dual-sided authorization tests in
       `src/test/java/com/allensandiego/adm/security/JdbcAuthenticationTests.java`:
       parameterized over sign-in scenarios from `contracts/authentication.md` — valid active
       account gets authenticated session, wrong password/unknown username/deactivated account
       get 302 to `/login?error` with generic message (FR-003, SC-002)
-- [X] T013 [P] [US1] Edge case tests in
+- [ ] T013 [P] [US1] Edge case tests in
       `src/test/java/com/allensandiego/adm/security/JdbcAuthenticationEdgeTests.java`:
       empty username/password rejected, whitespace-only submissions fail, same account already
       signed in elsewhere still succeeds (multiple sessions allowed), unverifiable/missing hash
       refused without crash or disclosure (FR-004/FR-014)
-- [X] T014 [P] [US1] Event recording tests in
+- [ ] T014 [P] [US1] Event recording tests in
       `src/test/java/com/allensandiego/adm/security/AuthEventRecordingTests.java`:
       every sign-in outcome writes an `AuthEvent` with username, UTC timestamp, and correct
       outcome; never logs passwords or hashes (FR-013/SC-008)
 
 ### Implementation for User Story 1
 
-- [X] T015 [P] [US1] Create the validated `LoginRequest` record in
+- [ ] T015 [P] [US1] Create the validated `LoginRequest` record in
       `src/main/java/com/allensandiego/adm/web/form/LoginRequest.java`: `username` non-blank,
       trimmed (max 64 chars matching `[a-zA-Z0-9._-]+`), `password` non-blank — Jakarta Bean
       Validation (FR-012)
-- [X] T016 [US1] Implement `LoginController` in
+- [ ] T016 [US1] Implement `LoginController` in
       `src/main/java/com/allensandiego/adm/web/LoginController.java`:
       - GET `/login` renders sign-in screen (CoreUI template), assets load without auth (FR-001)
       - POST `/login` processes form submission via Spring Security's
@@ -156,24 +156,24 @@ a generic "invalid credentials" message appears without revealing which field wa
         `/login?error` on failure (FR-007/FR-008)
       - GET `/` is default success URL when no original request saved; also home for authenticated
         users opening sign-in screen (FR-011) — depends on T009, T010, T015
-- [X] T017 [US1] Implement `AuthenticationSuccessHandler` in
+- [ ] T017 [US1] Implement `AuthenticationSuccessHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthenticationSuccessHandler.java`:
       extends/wraps `SavedRequestAwareAuthenticationSuccessHandler`, records `SUCCESS` event via
       `AuthEventService` with account identifier, clears throttle counter on success (research D-6)
       — depends on T009, T017
-- [X] T018 [US1] Implement `AuthenticationFailureHandler` in
+- [ ] T018 [US1] Implement `AuthenticationFailureHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthenticationFailureHandler.java`:
       records `FAILURE` event via `AuthEventService` with submitted username (from
       `ex.getAuthenticationRequest().getName()` or fallback to request parameter), works for
       unknown usernames without enabling enumeration, configures `hideUserNotFoundExceptions=true`
       (research D-6) — depends on T009, T017
-- [X] T019 [US1] Implement throttling guard in
+- [ ] T019 [US1] Implement throttling guard in
       `src/main/java/com/allensandiego/adm/security/ThrottledAuthenticationProvider.java`:
       custom provider wrapping `DaoAuthenticationProvider`, checks `LoginAttemptRegistry` before
       credential lookup to block attempts after 5 failures within 15 minutes, applies uniformly
       to known and unknown usernames so account existence is never revealed (research D-3) —
       depends on T004, T010
-- [X] T020 [US1] Create the sign-in screen view in
+- [ ] T020 [US1] Create the sign-in screen view in
       `src/main/resources/templates/login.html` using CoreUI admin layout with username/password
       fields, submit button, and error message area for generic "invalid credentials" feedback
 
@@ -191,24 +191,24 @@ and redirect to `/login`; include testing via browser history to ensure session 
 
 ### Tests for User Story 2 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [X] T021 [P] [US2] Sign-out flow tests in
+- [ ] T021 [P] [US2] Sign-out flow tests in
       `src/test/java/com/allensandiego/adm/security/LogoutFlowTests.java`:
       POST `/logout` while signed in records `SIGNOUT` event, invalidates session and clears
       SecurityContext, returns to `/login?logout`, subsequent protected URLs redirect to `/login`
       (FR-009/SC-005)
-- [X] T022 [P] [US2] Session termination tests in
+- [ ] T022 [P] [US2] Session termination tests in
       `src/test/java/com/allensandiego/adm/security/SessionTerminationTests.java`:
       expired session mid-task redirects to `/login` on next request, no protected content leaked,
       browser history navigation after logout also requires re-authentication (SC-005)
 
 ### Implementation for User Story 2
 
-- [X] T023 [US2] Update `SecurityConfig` in
+- [ ] T023 [US2] Update `SecurityConfig` in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`:
       - configure `LogoutSuccessHandler` to redirect to `/login?logout` (default behavior)
       - register custom `LogoutHandler` via `addLogoutHandler()` before default handler to record
         signout events (research D-6) — depends on T009, T017
-- [X] T024 [US2] Update `AuthenticationSuccessHandler` in
+- [ ] T024 [US2] Update `AuthenticationSuccessHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthenticationSuccessHandler.java`:
       ensure session fixation protection (`changeSessionId()`) is active so new session id issued
       at each sign-in (FR-008, research D-5) — depends on T017
@@ -227,31 +227,31 @@ confirm entry is refused; also verify throttled accounts cannot bypass the locko
 
 ### Tests for User Story 3 (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [X] T025 [P] [US3] Deactivation refusal tests in
+- [ ] T025 [P] [US3] Deactivation refusal tests in
       `src/test/java/com/allensandiego/adm/security/DeactivationRefusalTests.java`:
       deactivated account with correct password refused sign-in, no session created, generic
       error message (FR-004, SC-003)
-- [X] T026 [P] [US3] Throttle lockout tests in
+- [ ] T026 [P] [US3] Throttle lockout tests in
       `src/test/java/com/allensandiego/adm/security/ThrottleLockoutTests.java`:
       5 failed attempts within window triggers 15-minute block, blocked attempts recorded as
       `FAILURE` events, success clears window, unknown usernames also throttled (no existence
       disclosure) — FR-012, SC-007
-- [X] T027 [P] [US3] Username normalization tests in
+- [ ] T027 [P] [US3] Username normalization tests in
       `src/test/java/com/allensandiego/adm/security/UsernameNormalizationTests.java`:
       submitted username trimmed of whitespace, matched case-insensitively via SQL `LOWER()`,
       empty username/password refused with generic message (spec Assumptions, D-7)
 
 ### Implementation for User Story 3
 
-- [X] T028 [US3] Update `JdbcUserDetailsManager` in
+- [ ] T028 [US3] Update `JdbcUserDetailsManager` in
       `src/main/java/com/allensandiego/adm/security/JdbcUserDetailsManager.java`:
       ensure SQL queries use `CASE WHEN u.status='ACTIVE' THEN true ELSE false END` for the
       enabled column, so JDBC treats INACTIVE accounts as disabled (FR-004, research D-1)
-- [X] T029 [US3] Update throttling logic in
+- [ ] T029 [US3] Update throttling logic in
       `src/main/java/com/allensandiego/adm/security/ThrottledAuthenticationProvider.java`:
       throttle applies uniformly to known and unknown usernames, check before credential lookup
       so account existence is never revealed (FR-012, research D-3) — depends on T019
-- [X] T030 [US3] Update `AuthenticationFailureHandler` in
+- [ ] T030 [US3] Update `AuthenticationFailureHandler` in
       `src/main/java/com/allensandiego/adm/security/AuthenticationFailureHandler.java`:
       record failures for deactivated accounts and throttled attempts as `FAILURE` events
       (FR-013) — depends on T018
@@ -264,28 +264,28 @@ confirm entry is refused; also verify throttled accounts cannot bypass the locko
 
 **Purpose**: Cross-story audit/fail-closed coverage, hardening, and end-to-end validation
 
-- [X] T031 [P] Audit completeness tests in
+- [ ] T031 [P] Audit completeness tests in
       `src/test/java/com/allensandiego/adm/audit/AuthEventAuditTest.java`:
       every successful sign-in, failed sign-in, and sign-out writes an `AuthEvent` with actor
       (username), UTC timestamp, and outcome; 100% of authentication events are reviewable
       (FR-013/SC-008)
-- [X] T032 [P] Fail-closed tests in
+- [ ] T032 [P] Fail-closed tests in
       `src/test/java/com/allensandiego/adm/security/FailClosedAuthTest.java`:
       unauthenticated requests to protected paths redirect to `/login`, no protected content
       disclosed, deactivated principals get refused access (FR-011/SC-003)
-- [X] T033 [P] Password hash validation tests in
+- [ ] T033 [P] Password hash validation tests in
       `src/test/java/com/allensandiego/adm/security/PasswordHashTests.java`:
       `{id}encoded` delegation format enforced, null/empty stored hash refused without crash,
       BCrypt hashes work correctly (FR-005)
-- [X] T034 [P] Security hardening in
+- [ ] T034 [P] Security hardening in
       `src/main/java/com/allensandiego/adm/security/SecurityConfig.java`:
       CSRF enabled on all state-changing routes (`/login`, `/logout`), ensure no plaintext
       passwords appear in logs or events, verify session fixation protection is active (FR-014)
-- [X] T035 [P] Documentation refresh: update
+- [ ] T035 [P] Documentation refresh: update
       `specs/002-jdbc-user-authentication/quickstart.md` run commands and the endpoint tables
       in `contracts/authentication.md` if the implementation diverged; there is no `HELP.md`
       in this repository, so do not create one
-- [X] T036 Run `./mvnw test` and execute the authentication scenarios from
+- [ ] T036 Run `./mvnw test` and execute the authentication scenarios from
       `specs/002-jdbc-user-authentication/quickstart.md`; resolve failures until SC-001..SC-008
       all pass
 

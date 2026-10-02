@@ -21,7 +21,7 @@ are HTTP redirects to the sign-in screen; authorization failures are the 403 pag
   of access mid-session (per-request re-check) — FR-004/SC-003.
 - Only whitelisted paths are public: `/login`, `/css/**`, `/js/**`, `/assets/**`, `/error`.
   Everything else requires both an authenticated session and the required permission
-  (permission catalog unchanged from [001 contracts](../contracts/README.md)).
+  (permission catalog unchanged from [001 contracts](../../001-rbac-user-management/contracts/README.md)).
 - Single, generic error messaging: invalid credentials, a blocked (throttled) attempt, an
   empty username/password, a disabled account, and an unverifiable credential all surface the
   same generic "invalid credentials" message — the UI never reveals which field was wrong,
