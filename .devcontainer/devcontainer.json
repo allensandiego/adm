@@ -11,7 +11,8 @@
 	// Add other features here as needed.
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8080, 5432]
+	"forwardPorts": [8080, 5432],
+	"postStartCommand": "sudo service postgresql start"
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
