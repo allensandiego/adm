@@ -7,9 +7,8 @@
 		"dockerfile": "Dockerfile",
 		"context": ".."
 	},
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	// Add other features here as needed.
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [8080, 5432]

@@ -9,4 +9,8 @@ RUN apt-get update \
 		postgresql-client-18 \
 	&& rm -rf /var/lib/apt/lists/*
 
+USER vscode
+
 RUN curl -fsSL https://opencode.ai/v2/install | bash
+
+ENV PATH="/home/vscode/.opencode/bin:${PATH}"
