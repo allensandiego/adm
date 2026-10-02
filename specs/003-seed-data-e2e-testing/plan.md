@@ -21,7 +21,7 @@ test data model in [data-model.md](data-model.md); run/validation guide in
 
 ## Technical Context
 
-**Language/Version**: Java 21 (`pom.xml` `<java.version>21</java.version>`; satisfies constitution Principle III requirement of Java 17+ LTS)
+**Language/Version**: Java 21 (`pom.xml` `<java.version>21</java.version>`; satisfies constitution Principle III requirement of Java 21 LTS or newer)
 
 **Primary Dependencies**: Spring Boot 4.1.1 (Maven parent). For test support,
 `com.microsoft.playwright:playwright` 1.63.0 (already declared in `pom.xml`) plus JUnit 5 via
@@ -31,7 +31,7 @@ implementation; this feature adds test-scope dependencies only, plus the Maven F
 plugin binding for the E2E gate (research D-3, D-7).
 
 **Storage**: Embedded H2 (test/development profiles), Hibernate-managed schema per
-constitution v2.0.0; seeding is an idempotent application-level seeder (no migration tool),
+constitution v2.1.0; seeding is an idempotent application-level seeder (no migration tool),
 consistent with feature 001 decision D-7.
 
 **Testing**: Java Playwright driving Chromium end-to-end against the running application,
@@ -64,7 +64,7 @@ sign-in, admin journeys, effective permissions, permission boundaries, and locko
 |---------------------|---------------------|----------------------|----------|
 | I. Single system; exactly five core RBAC entities; definitions vs assignments separation | PASS | PASS | Seed populates only the five RBAC entities; personas are data, not new entities (data-model.md) |
 | II. Fail-closed; middleware resolution before controller; mutation-safety guardrails | PASS | PASS | E2E asserts allow/deny and lockout guards at the HTTP/UI boundary (contracts/e2e-scenarios.md, SC-002/SC-008) |
-| III. Java 17+/Spring Boot/Thymeleaf+CoreUI/H2 via Hibernate ddl-auto/JPA/UUID/Bean Validation | PASS | PASS | Technical Context; screens under test are the vendored CoreUI templates (clarification 2026-09-21); Playwright is test-scope only (research D-3) |
+| III. Java 21+/Spring Boot/Thymeleaf+CoreUI/H2 via Hibernate ddl-auto/JPA/UUID/Bean Validation | PASS | PASS | Technical Context; screens under test are the vendored CoreUI templates (clarification 2026-09-21); Playwright is test-scope only (research D-3) |
 | IV. Dual-sided authorization tests (200/403) + lockout tests mandatory | PASS | PASS | The E2E suite is the dual-sided layer across the assembled app (SC-002, FR-010, FR-011) |
 | Domain Model: strict FKs, cascade teardown, lockout rows protected, UTC | PASS | PASS | Seeder reuses the 001 entities and guardrails; it never bypasses service guardrails (research D-1) |
 | Security Implementation Standards: deny-by-default, resolved permissions exposed to views, centralized codes | PASS | PASS | Restricted/deactivated personas exercise the enforced boundaries; no magic strings in the seeder (research D-2) |
@@ -108,9 +108,9 @@ adm/                                       # root package com.allensandiego.adm
         ├── java/com/allensandiego/adm/
         │   └── e2e/
         │       ├── support/                    # Playwright lifecycle, base URL, fixtures
-        │       ├── AuthE2ETest.java            # sign-in journeys (US2/US3)
-        │       ├── AdminJourneysE2ETest.java   # permission/role/user journeys (US2)
-        │       └── PermissionBoundaryE2ETest.java  # allow/deny + lockout guards (US3)
+        │       ├── AuthE2EIT.java              # sign-in journeys (US2/US3)
+        │       ├── AdminJourneysE2EIT.java     # permission/role/user journeys (US2)
+        │       └── PermissionBoundaryE2EIT.java  # allow/deny + lockout guards (US3)
         └── resources/
             └── e2e/                            # seed expectations, scenario data
 ```

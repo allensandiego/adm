@@ -123,19 +123,19 @@ every protected screen yields both a success path and a refusal path.
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a deterministic, documented seed dataset containing all five RBAC entities from constitution Principle I: users, roles, permissions, role_permissions (mapping), and user_roles (assignments) — exactly as defined in constitution Principle I and data-model.md.
+- **FR-001**: System MUST provide a deterministic, documented seed dataset containing all five core RBAC entities: users, roles, permissions, role_permissions (mapping), and user_roles (assignments).
 - **FR-002**: The seed dataset MUST include at least: a fully-privileged administrator, a
   restricted non-administrator, and a deactivated account, with documented credentials.
 - **FR-003**: Seeding MUST be idempotent: repeated starts MUST converge to the same state
   without creating duplicates or mutating unrelated records.
-- **FR-004**: Seeding MUST be confined to test/development environments and MUST NOT introduce
+- **FR-004**: Seeding of test personas and test scenarios MUST be confined to test/development environments and MUST NOT introduce
   test data into a production environment.
 - **FR-005**: The seed dataset MUST be the single documented source of truth for end-to-end
   tests, so tests never depend on data created in a previous test run.
 - **FR-006**: System MUST provide an automated end-to-end test suite that drives a real browser
   through the running application, exercising it as an end user would.
 - **FR-007**: The suite MUST cover the sign-in journeys: valid credentials succeed, invalid
-  credentials are refused with a generic message, and deactivated accounts are refused (linked to SC-008 lockout guardrail testing in US3).
+  credentials are refused with a generic message, and deactivated accounts are refused.
 - **FR-008**: The suite MUST cover the core administrative journeys in a browser: permission
   catalog management, role creation and permission editing, and user creation with role
   assignment.
@@ -144,18 +144,18 @@ every protected screen yields both a success path and a refusal path.
 - **FR-010**: The suite MUST verify both sides of every protected permission boundary: the
   authorized account succeeds and the unauthorized account is refused without seeing protected
   content.
-- **FR-011**: The suite MUST verify the lockout guardrails: the final administrative role (Super Admin) cannot be deleted, the last administrator cannot be removed from their role, and the last active administrator account cannot be deactivated — all covered by SC-008.
+- **FR-011**: The suite MUST verify the lockout guardrails: the final administrative role (Super Admin) cannot be deleted, the last administrator cannot be removed from their role, and the last active administrator account cannot be deactivated.
 - **FR-012**: Each end-to-end test MUST be independently runnable and order-independent,
   passing on its own from the seeded starting state.
 - **FR-013**: The suite MUST start or connect to the application automatically, requiring only
   a single documented command from a fresh checkout.
 - **FR-014**: The suite MUST execute headless by default for automation while supporting a
   headed mode for local diagnosis, with identical assertions in both modes.
-- **FR-015**: On failure, the suite MUST capture diagnostic artifacts (Playwright trace + full-page screenshot) for the failing step and report the failing journey, step, and observed state (SC-007).
-- **FR-016**: The suite MUST synchronize on expected application states (readiness check via E2EBase readiness endpoint) rather than fixed delays, so that normal render and network variability does not cause failures (FR-012 order-independence).
+- **FR-015**: On failure, the suite MUST capture diagnostic artifacts (traces and full-page screenshots) for the failing step and report the failing journey, step, and observed state.
+- **FR-016**: The suite MUST synchronize on expected application states (using state-based readiness checks) rather than fixed delays, so that normal render and network variability does not cause failures.
 - **FR-017**: The suite MUST produce a clear machine-readable pass/fail result suitable for
   a continuous integration gate.
-- **FR-018**: The suite MUST drive the application's actual production screens (CoreUI templates in coreui/) and MUST NOT depend on separate test-only pages — all assertions against rendered UI content.
+- **FR-018**: The suite MUST drive the application's actual production screens and MUST NOT depend on separate test-only pages.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -172,15 +172,15 @@ every protected screen yields both a success path and a refusal path.
 
 ### Measurable Outcomes
 
-- **SC-001**: 100% of the core administrative journeys (FR-008: permission catalog, role creation/permission editing, user creation with role assignment) are exercised end-to-end through a real browser.
-- **SC-002**: 100% of protected screens from features 001/002 have both an authorized success scenario (admin) and unauthorized refusal scenario (e2e.viewer/e2e.inactive) — dual-sided authorization testing.
-- **SC-003**: Repeated seeding produces zero duplicates (verified in T015) and an identical dataset across 10 consecutive application restarts with database reset between runs.
-- **SC-004**: The full end-to-end suite completes in under 10 minutes (T030 SuiteDurationTest) on a standard development machine (JDK 21, Maven 3.9+, Chromium browser installed via Playwright CLI).
-- **SC-005**: The suite is deterministic: 20 consecutive runs (T029) yield identical pass/fail results with zero flaky failures (order-independent scenarios, state-based waits).
+- **SC-001**: 100% of the core administrative journeys (permission catalog, role creation/permission editing, user creation with role assignment) are exercised end-to-end through a real browser.
+- **SC-002**: 100% of protected screens have both an authorized success scenario and an unauthorized refusal scenario — verifying dual-sided authorization.
+- **SC-003**: Repeated seeding produces zero duplicates and an identical dataset across 10 consecutive application restarts with database reset between runs.
+- **SC-004**: The full end-to-end suite completes in under 10 minutes on a standard development machine.
+- **SC-005**: The suite is deterministic: 20 consecutive runs yield identical pass/fail results with zero flaky failures.
 - **SC-006**: A new contributor can run the entire suite with one documented command and no
   manual environment changes.
-- **SC-007**: Every failed scenario leaves diagnostic artifacts (Playwright trace + screenshot in target/e2e-artifacts/<scenario>, T009) sufficient to identify the failing step without re-running.
-- **SC-008**: 100% of lockout guardrail attempts (E2E-LOCK-01/02/03: final admin role deletion, last admin removal, last active admin deactivation) are proven blocked by end-to-end scenarios — mutations rejected with conflict errors, no state change.
+- **SC-007**: Every failed scenario leaves diagnostic artifacts sufficient to identify the failing step without re-running.
+- **SC-008**: 100% of lockout guardrail attempts (final admin role deletion, last admin removal, last active admin deactivation) are proven blocked by end-to-end scenarios — mutations rejected with conflict errors, no state change.
 
 ## Assumptions
 

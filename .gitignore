@@ -33,3 +33,11 @@ build/
 .vscode/
 
 nohup.out
+
+*.class
+*.jar
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp*.log
+*.log

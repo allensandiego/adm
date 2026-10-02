@@ -1,6 +1,6 @@
 # Data Model: RBAC User Management
 
-**Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-015 and constitution v2.0.0.
+**Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-015 and constitution v2.1.0.
 
 ## Conventions
 
@@ -22,7 +22,7 @@ Represents a person with a login account.
 |--------------|-----------|-----------------------------------------------------------|
 | id           | UUID      | PK (v4)                                                   |
 | username     | string    | unique, non-blank, <=64 chars, `[a-zA-Z0-9._-]+`          |
-| password     | string    | non-blank, `[a-zA-Z0-9._-]+`                              |
+| password     | string    | inbound credential format `[a-zA-Z0-9._-]+`; stored hashed per Feature 002 (zero plaintext) |
 | display_name | string    | non-blank, <=120 chars                                    |
 | status       | enum      | `ACTIVE` / `INACTIVE`; default `ACTIVE`                   |
 | version      | long      | optimistic locking (FR-013)                               |

@@ -69,7 +69,7 @@ boundary is both open to the right actors and closed to everyone else.
 
 All build, compile, test, and execution commands MUST use the Maven wrapper (`./mvnw`) for
 consistency across environments. NEVER invoke `mvn` directly from system PATH; agents must
-always use `./mvwn {command}` to ensure correct dependency resolution and build reproducibility.
+always use `./mvnw {command}` to ensure correct dependency resolution and build reproducibility.
 
 ## Domain Model & Relational Integrity
 

@@ -21,7 +21,7 @@ model in [data-model.md](data-model.md).
 ## Technical Context
 
 **Language/Version**: Java 21 (`<java.version>21</java.version>` in `pom.xml`; satisfies
-constitution Principle III "Java 17 LTS or newer")
+constitution Principle III "Java 21 LTS or newer")
 
 **Primary Dependencies**: Spring Boot 4.1.1 (web, thymeleaf, validation, data-jpa, security),
 Hibernate ORM, H2 Database (embedded), Thymeleaf with CoreUI Admin Bootstrap 5 template,
@@ -59,7 +59,7 @@ five core tables + supporting audit log.
 |---------------------|---------------------|----------------------|----------|
 | I. Single-system, exactly five core RBAC entities; definitions vs assignments separation | PASS | PASS | data-model.md: 5 core tables + supporting audit_event (see note); Role/Permission = definitions, User/User-Role = assignments, keyed references |
 | II. Fail-closed; middleware resolution before controller; mutation-safety guardrails | PASS | PASS | contracts/README.md security conventions; filter-chain resolution (D-1); G1/G2/G3 in data-model.md |
-| III. Java 17+ / Spring Boot / Thymeleaf+CoreUI / H2 via Hibernate ddl-auto / JPA / UUID / Bean Validation | PASS | PASS | Technical Context (Java 21, Spring Boot 4.1.1); research D-2, D-6, D-7, D-8 |
+| III. Java 21+ / Spring Boot / Thymeleaf+CoreUI / H2 via Hibernate ddl-auto / JPA / UUID / Bean Validation | PASS | PASS | Technical Context (Java 21, Spring Boot 4.1.1); research D-2, D-6, D-7, D-8 |
 | IV. Dual-sided authorization tests (200/403) + lockout tests | PASS | PASS | quickstart.md test assets; SC-003/SC-004 mappings; violations none |
 | Domain Model: strict FKs, cascade teardown, lockout rows not cascade-deletable, UTC | PASS | PASS | data-model.md; guardrails enforced in service layer, not via cascade |
 | Security Implementation Standards: deny-by-default Spring Security, permission set exposed to views, centralized codes, no magic strings | PASS | PASS | contracts/README.md; permission catalog; D-2 |

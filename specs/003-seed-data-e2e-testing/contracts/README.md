@@ -43,8 +43,8 @@ testers, CI, and the E2E harness rely on:
 ### Profiles
 
 - The application under test starts with the `test` profile so seeding is enabled.
-- E2E classes are named `*IT` (Failsafe) and run during `mvn verify`; unit/MockMvc tests from
-  features 001/002 stay on Surefire (`mvn test`).
+- E2E classes are named `*IT` (Failsafe) and run during `./mvnw verify`; unit/MockMvc tests from
+  features 001/002 stay on Surefire (`./mvnw test`).
 
 ### Observability contract
 

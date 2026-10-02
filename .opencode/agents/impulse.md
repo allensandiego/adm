@@ -11,6 +11,7 @@ repeat_penalty: 1.0
 presence_penalty: 1.5
 reasoning:
   effort: high
+steps: 20
 permission:
   grep: allow
   glob: allow

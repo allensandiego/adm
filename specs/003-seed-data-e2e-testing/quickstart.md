@@ -1,11 +1,11 @@
 # Quickstart: Seed Data & End-to-End Testing
 
 **Date**: 2026-09-26 (refreshed) | Validates: [spec.md](spec.md) · [contracts/](contracts/README.md) ·
-[data-model.md](data-model.md), constitution Principles I-IV
+[data-model.md](data-model.md), constitution Principles I-V
 
 ## Prerequisites
 
-- JDK 21 (satisfies constitution Principle III: Java 17+ LTS)
+- JDK 21 (satisfies constitution Principle III: Java 21 LTS or newer)
 - Maven 3.9+ or the checked-in wrapper `./mvnw`
 - A headless-capable OS (developer workstation or CI runner; minimum 8GB RAM, 4 cores)
 - No external database — embedded H2 managed by Hibernate (constitution Principle III: ddl-auto schema management)

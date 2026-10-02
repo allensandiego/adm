@@ -3,20 +3,21 @@ name: lintel
 description: A specialized sub-agent for non-destructive code review, quality audits, and safety checks.
 mode: subagent
 model: lmstudio/gemma-4-12b-it
-temperature: 1.5
+temperature: 1.0
 top_p: 0.95
 top_k: 64
 reasoning: 
-  effort: high
-steps: 10
+  effort: medium
+steps: 20
 stream: true
 permission:
-  doom_loop: ask
+  "*": deny
   grep: allow
   glob: allow
   read: allow
   lsp: allow
   bash: allow
+  question: allow
 ---
 
 You are a specialized code reviewer sub-agent.

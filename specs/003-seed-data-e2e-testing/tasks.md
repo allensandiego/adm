@@ -9,7 +9,7 @@ description: "Task list for Seed Data & End-to-End Testing feature implementatio
 
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/e2e-scenarios.md
 
-**Tests**: INCLUDED. The constitution (v2.0.0, Principle IV) mandates explicit tests for both
+**Tests**: INCLUDED. The constitution (v2.1.0, Principle IV) mandates explicit tests for both
 sides of every permission boundary plus lockout-critical behavior. Every end-to-end scenario
 must be independently runnable and order-independent.
 
@@ -74,38 +74,38 @@ testing of each story.
 
 ---
 
-## Phase 2: Seed Data Implementation (FR-001 through FR-008)
+## Phase 2: User Story 1 - Reproducible Seeded Dataset (Priority: P1)
 
 **Purpose**: Implement deterministic, idempotent seeded test data for all five RBAC entities
 
 **⚠️ CRITICAL**: Feature 003 depends on feature 001's entities and services being complete
 
-- [ ] T008 Create the `TestDataSeeder` component in
+- [ ] T008 [US1] Create the `TestDataSeeder` component in
       `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`: activated only under
       the `test`/`dev` profiles (`@Profile`), upserts defined rows by natural key (username, role
       name, permission code) inside a transaction, uses the same repositories/services as the
       application, and is safe to run on every startup (research D-1, FR-003)
-- [ ] T009 Implement the permission seeding logic in `TestDataSeeder`: inserts all 13 centralized
+- [ ] T009 [US1] Implement the permission seeding logic in `TestDataSeeder`: inserts all 13 centralized
       permission codes (`permission.view/create/edit`, `user.view/create/edit/activate/roles.assign`,
       `role.view/create/edit/delete/permissions.edit`) as active from `Permissions.java` (T006 from 001)
-- [ ] T010 Implement the role seeding logic in `TestDataSeeder`: creates "Super Admin" with all 13
+- [ ] T010 [US1] Implement the role seeding logic in `TestDataSeeder`: creates "Super Admin" with all 13
       codes and "Report Viewer" with only view permissions (`permission.view`, `role.view`,
       `user.view`) (data-model.md, research D-2)
-- [ ] T011 Implement the user seeding logic in `TestDataSeeder`: creates three personas:
+- [ ] T011 [US1] Implement the user seeding logic in `TestDataSeeder`: creates three personas:
       `e2e.admin` (ACTIVE, Super Admin role), `e2e.viewer` (ACTIVE, Report Viewer role), and
       `e2e.inactive` (INACTIVE, Report Viewer role) with documented credentials (data-model.md,
       research D-2)
-- [ ] T012 Implement the mapping seeding logic in `TestDataSeeder`: upserts `role_permissions` for
+- [ ] T012 [US1] Implement the mapping seeding logic in `TestDataSeeder`: upserts `role_permissions` for
       Super Admin → all codes and Report Viewer → its 3 codes; upserts `user_roles` assignments
       for all three personas (data-model.md)
-- [ ] T013 Verify idempotency: repeated seeding runs produce identical counts and values without
+- [ ] T013 [US1] Verify idempotency: repeated seeding runs produce identical counts and values without
       duplicates (SC-003, data-model.md section "Idempotency & reconciliation rules")
-- [ ] T014 Verify environment gating: seeding is off unless the `test`/`dev` profile is active;
+- [ ] T014 [US1] Verify environment gating: seeding is off unless the `test`/`dev` profile is active;
       production startup creates no test data (FR-004)
 
 ---
 
-## Phase 3: User Story 1 - Sign-In Journeys (FR-007, FR-008 part)
+## Phase 3: User Story 2 - Sign-In Journeys (Priority: P2)
 
 **Goal**: The suite covers sign-in journeys: valid credentials succeed, invalid credentials are
 refused with a generic message, and deactivated accounts are refused (SC-008 lockout guardrail
@@ -113,25 +113,25 @@ testing in US3).
 
 **Independent Test**: Each scenario is independently runnable from the seeded starting state.
 
-### Tests for User Story 1 (write FIRST, ensure they FAIL before implementation) ⚠️
+### Tests for Sign-In Journeys (write FIRST, ensure they FAIL before implementation) ⚠️
 
-- [ ] T015 [P] [US1] Sign-in success test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: given the application
+- [ ] T015 [P] [US2] Sign-in success test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given the application
       and seeded data are running, when a real browser signs in as `e2e.admin` with valid
       credentials, then it reaches the dashboard without manual steps (FR-007)
-- [ ] T016 [P] [US1] Invalid credentials test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: given the sign-in
+- [ ] T016 [P] [US2] Invalid credentials test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given the sign-in
       screen, when wrong password or unknown username is submitted, then a single generic
       "invalid credentials" message shows and no session is created (FR-007)
-- [ ] T017 [P] [US1] Inactive account test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: given the
+- [ ] T017 [P] [US2] Inactive account test in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given the
       `e2e.inactive` persona, when correct credentials are submitted, then entry is refused and
       no session is created (FR-007, US3 SC-008)
 
-### Implementation for User Story 1
+### Implementation for Sign-In Journeys
 
-- [ ] T018 [P] [US1] Create the `AuthE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2ETest.java`: extends `BasePage`,
+- [ ] T018 [P] [US2] Create the `AuthE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: extends `BasePage`,
       signs in as each persona, and asserts the visible outcomes (FR-007, research D-5)
 
 ---
@@ -146,30 +146,30 @@ role creation and permission editing, and user creation with role assignment.
 ### Tests for User Story 2 (write FIRST, ensure they FAIL before implementation) ⚠️
 
 - [ ] T019 [P] [US2] Permission catalog test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
       admin, when a new permission is created via the CoreUI form, then it appears in the list and
       is selectable in the role editor (FR-008, SC-001)
 - [ ] T020 [P] [US2] Permission validation test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
       admin, when a blank or duplicate permission code is submitted, then a clear validation message
       shows and nothing is created (FR-008)
 - [ ] T021 [P] [US2] Role creation test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
       admin, when a role is created with a permission set and reopened, then the saved set is exactly
       what was configured (FR-008, SC-001)
 - [ ] T022 [P] [US2] User creation test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given signed-in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
       admin, when a user is created and a role assigned, then the assignment persists and is shown on
       the user detail (FR-008, SC-001)
 - [ ] T023 [P] [US2] Effective permissions test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: given a user with
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given a user with
       multiple roles, when their detail is opened, then displayed effective permissions equal the union
       of the roles' active permissions; deactivating a permission removes it from the union (FR-009, SC-001)
 
 ### Implementation for User Story 2
 
-- [ ] T024 [P] [US2] Create the `AdminJourneysE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2ETest.java`: extends `BasePage`,
+- [ ] T024 [P] [US2] Create the `AdminJourneysE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: extends `BasePage`,
       signs in as admin, and executes each core journey with assertions (FR-008)
 - [ ] T025 [P] [US2] Create the permission catalog page object in
       `src/test/java/com/allensandiego/adm/e2e/support/PermissionPage.java`: locators for list, form,
@@ -195,34 +195,34 @@ last administrator are blocked.
 ### Tests for User Story 3 (write FIRST, ensure they FAIL before implementation) ⚠️
 
 - [ ] T028 [P] [US3] Deny viewer test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
       `e2e.viewer` persona, when each management screen/action beyond its view permissions is attempted,
       then access is refused and no protected content is rendered (FR-010, SC-002)
 - [ ] T029 [P] [US3] Allow admin test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
       admin persona, when the same navigation/actions are performed as E2E-DENY-01, then each succeeds
       (dual-sided counterpart of E2E-DENY-01, FR-010)
 - [ ] T030 [P] [US3] Deny inactive test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
       `e2e.inactive` persona (session simulated), when any protected screen is requested, then access
       is refused (FR-010, SC-008)
 - [ ] T031 [P] [US3] Lockout final role test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
       final protected role (Super Admin), when deletion is attempted, then it is blocked with a visible
       warning and the dataset is unchanged (FR-011, SC-008)
 - [ ] T032 [P] [US3] Lockout last assignment test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the last
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the last
       administrator assignment, when removal (including self-demotion) is attempted, then it is blocked
       and nothing changes (FR-011, SC-008)
 - [ ] T033 [P] [US3] Lockout last active user test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: given the last
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the last
       active administrator, when deactivation is attempted, then it is blocked and nothing changes (FR-011,
       SC-008)
 
 ### Implementation for User Story 3
 
-- [ ] T034 [P] [US3] Create the `PermissionBoundaryE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2ETest.java`: extends
+- [ ] T034 [P] [US3] Create the `PermissionBoundaryE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: extends
       `BasePage`, signs in as each persona, and asserts allow/deny outcomes (FR-010)
 - [ ] T035 [P] [US3] Create the lockout scenario helpers in
       `src/test/java/com/allensandiego/adm/e2e/support/LockoutHelpers.java`: methods to attempt deletion
@@ -238,35 +238,35 @@ last administrator are blocked.
 ### Tests for Cross-Cutting Behaviors (write FIRST, ensure they FAIL before implementation) ⚠️
 
 - [ ] T036 [P] [Cross] Determinism test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2ETest.java`: 10 consecutive
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2EIT.java`: 10 consecutive
       application restarts with database reset produce identical seeded state (SC-003)
 - [ ] T037 [P] [Cross] Order-independence test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2ETest.java`: 20 consecutive
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2EIT.java`: 20 consecutive
       suite runs yield identical pass/fail results with zero flaky failures (SC-005)
 - [ ] T038 [P] [Cross] Artifact capture test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/ArtifactE2ETest.java`: when a scenario fails,
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ArtifactE2EIT.java`: when a scenario fails,
       then trace + screenshot are captured under `target/e2e-artifacts/<scenario>/` (FR-015, SC-007)
 - [ ] T039 [P] [Cross] Fail-fast test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/ConnectivityE2ETest.java`: when the application
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ConnectivityE2EIT.java`: when the application
       is not running or the configured address is unreachable, then the suite fails fast with an actionable
       message (Edge Case 3)
 - [ ] T040 [P] [Cross] Headless/headed test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/ModeE2ETest.java`: the suite runs headless by
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ModeE2EIT.java`: the suite runs headless by
       default and identically when headed, with no differences in assertions (FR-014)
 
 ### Implementation for Cross-Cutting Behaviors
 
-- [ ] T041 [P] [Cross] Create the `DeterminismE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2ETest.java`: runs repeated seeding
+- [ ] T041 [P] [Cross] Create the `DeterminismE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2EIT.java`: runs repeated seeding
       and suite executions to verify determinism (SC-003, SC-005)
-- [ ] T042 [P] [Cross] Create the `ArtifactE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/ArtifactE2ETest.java`: triggers expected failures
+- [ ] T042 [P] [Cross] Create the `ArtifactE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ArtifactE2EIT.java`: triggers expected failures
       and verifies artifacts are captured correctly (FR-015, SC-007)
-- [ ] T043 [P] [Cross] Create the `ConnectivityE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/ConnectivityE2ETest.java`: tests fail-fast behavior
+- [ ] T043 [P] [Cross] Create the `ConnectivityE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ConnectivityE2EIT.java`: tests fail-fast behavior
       when the application is unreachable (Edge Case 3)
-- [ ] T044 [P] [Cross] Create the `ModeE2ETest` class in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/ModeE2ETest.java`: verifies identical behavior
+- [ ] T044 [P] [Cross] Create the `ModeE2EIT` class in
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/ModeE2EIT.java`: verifies identical behavior
       in headless and headed modes (FR-014)
 - [ ] T045 [P] [Cross] Create the suite runner utility in
       `src/test/java/com/allensandiego/adm/e2e/support/SuiteRunner.java`: orchestrates the full E2E suite,
@@ -330,12 +330,12 @@ last administrator are blocked.
 
 | Criterion | Task(s) | Verification |
 |-----------|---------|--------------|
-| SC-001: 100% of core admin journeys exercised | T019-T023, T024-T027 | Run `AuthE2ETest` and `AdminJourneysE2ETest`; all pass |
-| SC-002: Dual-sided authorization testing | T028-T030, T029, T034 | Run `PermissionBoundaryE2ETest`; allow/deny pairs both pass |
+| SC-001: 100% of core admin journeys exercised | T019-T023, T024-T027 | Run `AuthE2EIT` and `AdminJourneysE2EIT`; all pass |
+| SC-002: Dual-sided authorization testing | T028-T030, T029, T034 | Run `PermissionBoundaryE2EIT`; allow/deny pairs both pass |
 | SC-003: Zero duplicates across restarts | T013, T036 | Run seeder 10 times; verify identical counts and values |
 | SC-004: Suite completes in under 10 minutes | T046 | Measure total suite runtime on standard dev machine |
 | SC-005: Deterministic results (20 runs) | T037 | Run suite 20 times; verify identical pass/fail results |
-| SC-006: Single command execution | T049 | Document `./mvnw verify -Pe2e` or equivalent |
+| SC-006: Single command execution | T049 | Document `./mvnw verify` |
 | SC-007: Artifacts on failure | T038, T042 | Trigger a known failure; verify trace + screenshot captured |
 | SC-008: Lockout guardrails proven blocked | T031-T033 | Run lockout scenarios; verify 409 errors and no state change |
 
@@ -352,17 +352,16 @@ last administrator are blocked.
 
 ### Incremental Delivery
 
-1. Setup + Seed Data → foundation ready
-2. US1 (Sign-In Journeys) → validate authentication flows
-3. US2 (Core Admin Journeys) → validate permission/role/user management
-4. US3 (Permission Boundaries) → validate security guardrails
-5. Cross-Cutting behaviors → deterministic, artifact-capturing suite
+1. Setup + Seed Data → foundation ready (US1)
+2. US2 (Sign-In & Core Admin Journeys) → validate authentication and management flows
+3. US3 (Permission Boundaries & Lockout) → validate security guardrails
+4. Cross-Cutting behaviors → deterministic, artifact-capturing suite
 
 ### Parallel Team Strategy
 
 1. Complete Setup + Seed Data together
 2. Then:
-   - Developer A: US1 (Sign-In scenarios)
+   - Developer A: US2 (Sign-In scenarios)
    - Developer B: US2 (Admin journeys), after seed data
    - Developer C: US3 (Boundaries), after US2
 3. Stories integrate through shared seeded state — run Phase 6 before final validation
@@ -381,5 +380,3 @@ last administrator are blocked.
 - Seeded credentials are test-only, documented, and never used in production
 - Passwords stored hashed (BCrypt) via feature 002 authentication model
 - Standard developer workstation (8GB RAM, 4 cores) and CI runners can host headless Chromium
-
-(End of file - total 365 lines)

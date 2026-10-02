@@ -15,7 +15,7 @@
 ## Setup & run
 
 ```sh
-./mvnw spring-boot:run      # or mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 - On startup, the seeder idempotently creates the permission catalog (see
@@ -26,7 +26,7 @@
 ## Automated validation (start here)
 
 ```sh
-./mvnw test                # or mvn test
+./mvnw test
 ```
 
 Expected outcome: all tests green, including dual-sided authorization coverage required by
@@ -38,7 +38,7 @@ Test assets proving the constitutional gates:
 - **Permission enforcement (SC-003)**: parameterized tests iterate each screen/form in
   contracts/; a holder of the matching permission receives 200, a user with all other
   permissions except it receives 403.
-- **Fail-closed (Pr. II)**: unauthenticated requests to every non-whitelisted path return 401
+- **Fail-closed (Pr. II)**: unauthenticated requests to every non-whitelisted path return 302
   (redirect to /login); deactivated users receive 403 on every protected path.
 - **Lockout guardrails (SC-004 / FR-010)**: tests attempt G1 (delete final protected role),
   G2 (remove final protected-role assignment), G3 (deactivate final admin) and assert 409

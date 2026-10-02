@@ -1,6 +1,6 @@
 # Data Model: JDBC User Authentication
 
-**Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-014 and constitution v2.0.0; extends the
+**Date**: 2026-09-26 (refreshed) | Derived from spec FR-001..FR-014 and constitution v2.1.0; extends the
 feature-001 data model ([data-model.md](../../001-rbac-user-management/data-model.md)).
 
 ## Conventions

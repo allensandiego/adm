@@ -25,7 +25,7 @@ interface contracts in [contracts/](contracts/README.md); data model in
 
 ## Technical Context
 
-**Language/Version**: Java 21 (constitution Principle III: Java 17 LTS or newer; `pom.xml`
+**Language/Version**: Java 21 (constitution Principle III: Java 21 LTS or newer; `pom.xml`
 sets 21)
 
 **Primary Dependencies**: Spring Boot 4.1.x (`spring-boot-starter-parent` 4.1.1) with Spring
@@ -71,7 +71,7 @@ accounts; ~6 protected screens already defined in feature 001.
 |---------------------|---------------------|----------------------|----------|
 | I. Single-system, exactly five core RBAC entities; definitions vs assignments separation | PASS | PASS | data-model.md: no RBAC entity added; `users.password_hash` is a column addition; `auth_event` is a supporting table (like 001's `audit_event`), not an RBAC entity |
 | II. Fail-closed; middleware resolution before controller; mutation-safety guardrails | PASS | PASS | `anyRequest().authenticated()` + per-request `AuthorizationManager` (research D-4); guardrails G1/G2/G3 unchanged from 001 |
-| III. Java 17+ / Spring Boot / Thymeleaf+CoreUI / H2 via Hibernate ddl-auto / JPA / UUID / Bean Validation | PASS | PASS | Technical Context; Java 21, Boot 4.1; JDBC leg is read-only over the same H2 DataSource |
+| III. Java 21+ / Spring Boot / Thymeleaf+CoreUI / H2 via Hibernate ddl-auto / JPA / UUID / Bean Validation | PASS | PASS | Technical Context; Java 21, Boot 4.1; JDBC leg is read-only over the same H2 DataSource |
 | IV. Dual-sided authorization tests (200/403) + lockout tests | PASS | PASS | quickstart.md test assets: permitted 200, anonymous → redirect to `/login`, unauthorized → 403; 001 suites cover RBAC boundaries |
 | Domain Model: strict FKs, cascade teardown, lockout rows not cascade-deletable, UTC | PASS | PASS | data-model.md: `auth_event.account_id` FK, UTC timestamps; `users.password_hash` nullable (unverifiable → refused) |
 | Security Implementation Standards: deny-by-default, per-request permission set exposed to views, centralized codes, no magic strings | PASS | PASS | contracts/README.md; enforcement never consults session-cached authorities (D-4); permission codes unchanged from 001 catalog |

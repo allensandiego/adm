@@ -45,7 +45,7 @@ seeder, see Quickstart).
 | status | meaning                         | user sees                                  |
 |--------|---------------------------------|--------------------------------------------|
 | 403    | authenticated but not permitted | "Not authorized" page; no protected markup |
-| 401    | not authenticated              | redirect to `/login`                       |
+| 302    | not authenticated              | redirect to `/login`                       |
 | 400    | invalid submission             | inline field errors + summary              |
 | 409    | concurrent edit or guardrail   | conflict message; nothing written          |
 
@@ -56,3 +56,14 @@ See the per-area contract files:
 - [permissions.md](permissions.md) — Permission CRUD + activation.
 - [roles.md](roles.md) — Role CRUD + role-permission editor.
 - [users.md](users.md) — User CRUD + activation + role assignment.
+
+## UI Layout & Reference Templates
+
+All server-rendered views in [`src/main/resources/templates/`](file:///home/allen/workspace/adm/src/main/resources/templates/) are built using the reference HTML pages in [`coreui/`](file:///home/allen/workspace/adm/coreui/) (documented in detail in [`coreui/README.md`](file:///home/allen/workspace/adm/coreui/README.md) and [`src/main/resources/templates/README.md`](file:///home/allen/workspace/adm/src/main/resources/templates/README.md)):
+
+- **Base Layout & Shell**: [`coreui/blank.html`](file:///home/allen/workspace/adm/coreui/blank.html) — Canonical admin layout blueprint (sidebar, topbar header, breadcrumbs, content container shell, color mode switcher). Deconstructed into `templates/fragments/sidebar.html` and `templates/fragments/topbar.html`.
+- **List & Table Views**: [`coreui/components/tables.html`](file:///home/allen/workspace/adm/coreui/components/tables.html), [`coreui/components/pagination.html`](file:///home/allen/workspace/adm/coreui/components/pagination.html), [`coreui/components/badge.html`](file:///home/allen/workspace/adm/coreui/components/badge.html) — Reference for permission, role, and user list views with search, pagination, and status badges (`badge bg-success`, `badge bg-secondary`).
+- **Forms & Editors**: [`coreui/forms/validation.html`](file:///home/allen/workspace/adm/coreui/forms/validation.html), [`coreui/forms/layout.html`](file:///home/allen/workspace/adm/coreui/forms/layout.html), [`coreui/forms/checks-radios.html`](file:///home/allen/workspace/adm/coreui/forms/checks-radios.html) — Reference for entity create/edit forms and permission/role assignment matrices.
+- **Detail Views**: [`coreui/components/cards.html`](file:///home/allen/workspace/adm/coreui/components/cards.html), [`coreui/components/list-group.html`](file:///home/allen/workspace/adm/coreui/components/list-group.html) — Reference for entity detail cards and carried permissions.
+- **Error Screens**: [`coreui/error-pages/404.html`](file:///home/allen/workspace/adm/coreui/error-pages/404.html), [`coreui/error-pages/500.html`](file:///home/allen/workspace/adm/coreui/error-pages/500.html) — Reference for user-facing error pages (`templates/error.html`).
+- **Dashboard Overview**: [`coreui/index.html`](file:///home/allen/workspace/adm/coreui/index.html), [`coreui/widgets.html`](file:///home/allen/workspace/adm/coreui/widgets.html) — Reference for `templates/home.html`.

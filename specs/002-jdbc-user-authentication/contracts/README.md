@@ -49,3 +49,9 @@ See [authentication.md](authentication.md) — `/login` (GET screen, POST submis
 | 200                        | `/login` (anonymous) or home after valid sign-in | sign-in screen / home               |
 | 403                        | authenticated but not permitted  | "Not authorized" page; no protected markup    |
 | 302 → `/`                  | authenticated user opens `/login` | home (FR-011)                                 |
+
+## UI Layout & Reference Templates
+
+The sign-in screen in `src/main/resources/templates/login.html` is built using CoreUI Free Bootstrap Admin Template v5.5.0:
+- Reference Blueprint: [`coreui/authentication/login.html`](file:///home/allen/workspace/adm/coreui/authentication/login.html) — Documents centered layout, input groups, and alert placement.
+- Full reference documentation: [`coreui/README.md`](file:///home/allen/workspace/adm/coreui/README.md) and [`src/main/resources/templates/README.md`](file:///home/allen/workspace/adm/src/main/resources/templates/README.md).

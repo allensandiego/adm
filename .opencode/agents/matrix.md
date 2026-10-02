@@ -3,15 +3,15 @@ name: matrix
 description: A specialized sub-agent for writing, refactoring, and structuring raw source code and automation scripts. Invoked when structural code generation or logic implementation is required.
 model: lmstudio/qwen3.5-9b-mtp
 mode: subagent
-temperature: 0.3
-top_p: 0.8
+temperature: 0.6
+top_p: 0.95
 top_k: 20
 min_p: 0.0
-repeat_penalty: 1.0
-presence_penalty: 1.5
+repetition_penalty: 1.0
+presence_penalty: 0.5
 reasoning:
-  effort: low
-steps: 10
+  effort: medium
+steps: 20
 stream: false
 permission:
   "*": deny
@@ -23,7 +23,6 @@ permission:
   task: allow
   lsp: allow
   question: allow
-  doom_loop: ask
 ---
 
 You are in senior programmer execution mode. Your singular purpose is to implement, refactor, and fix raw source code or scripts delegated to you.
