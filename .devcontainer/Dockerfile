@@ -11,6 +11,6 @@ RUN apt-get update \
 
 USER vscode
 
-RUN curl -fsSL https://opencode.ai/v2/install | bash
+RUN curl -fsSL https://opencode.ai/install | bash
 
 ENV PATH="/home/vscode/.opencode/bin:${PATH}"
