@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS auth_event;
+DROP TABLE IF EXISTS audit_event;
 DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS role_permissions;
 DROP TABLE IF EXISTS users;

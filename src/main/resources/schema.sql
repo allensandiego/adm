@@ -53,3 +53,23 @@ create table user_roles (
     foreign key (role_id) references roles(id) on delete cascade
 );
 
+create table audit_event (
+    id uuid primary key,
+    actor varchar(255),
+    action varchar(50) not null,
+    target_type varchar(50) not null,
+    target_id uuid,
+    before_value text,
+    after_value text,
+    created_at timestamp not null default now()
+);
+
+create table auth_event (
+    id uuid primary key,
+    username varchar(255),
+    account_id uuid,
+    outcome varchar(50) not null,
+    occurred_at timestamp not null default now(),
+    foreign key (account_id) references users(id) on delete set null
+);
+
