@@ -51,9 +51,8 @@ testing of each story.
       Spring Security test artifact is `org.springframework.security:spring-security-test`, NOT
       `spring-boot-starter-security-test`, which does not exist
 - [ ] T002 [P] Configure `src/main/resources/application.properties`: PostgreSQL datasource,
-      `spring.jpa.hibernate.ddl-auto=none`, SQL initialization scripts,
-      `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080`, and
-      `app.seed.admin-password` for the seeder (research D-7/D-8)
+      `spring.jpa.hibernate.ddl-auto=none`, SQL initialization scripts (`drop.sql`, `schema.sql`, `data.sql`),
+      `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080` (research D-7/D-8)
 - [ ] T003 [P] Create the main package skeleton `config/`, `domain/`, `security/`, `service/`,
        `web/`, `web/form/` under `src/main/java/com/allensandiego/adm/`
 - [X] T004 [P] Populate `src/main/resources/static/` with the CoreUI Admin Bootstrap 5 CSS/JS
@@ -146,11 +145,9 @@ that every user story builds on
       `@ControllerAdvice`/argument resolver that puts the permission set on the request so
       fragments render only permitted menu items and buttons; cosmetic only, never the security
       boundary — depends on T023 (research D-2)
-- [ ] T026 Implement the idempotent `DataSeeder` in
-      `src/main/java/com/allensandiego/adm/config/DataSeeder.java`: upsert all 13 permission
-      codes from T006 with their paths, the protected "Super Admin" role carrying every code, and
-      one seeded administrator user with a password from `app.seed.admin-password`; safe on every
-      startup — depends on T006, T014, T015, T016, T020
+- [ ] T026 Verify SQL initialization in `src/main/resources/data.sql`:
+      seeds all 13 permission codes from T006 with their paths, the protected Administrator role (`admin`)
+      carrying every code, and the seeded administrator user `adminuser` with password `admin123`
       (research D-7, spec Assumptions)
 
 **Checkpoint**: Entities, repositories, permission resolution, and the fail-closed seam are

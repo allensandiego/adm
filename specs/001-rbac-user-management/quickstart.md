@@ -19,10 +19,10 @@
 ./mvnw spring-boot:run
 ```
 
-- On startup, the seeder idempotently creates the permission catalog (see
-  contracts/README.md), the protected "Super Admin" role carrying all permissions, and one
-  seeded administrator user (`admin` / password set via `app.seed.admin-password`).
-- Open `http://localhost:8080/login`, sign in as the seeded administrator.
+- On startup, the SQL initialization scripts idempotently create the schema and load seed data
+  (see `src/main/resources/data.sql`), including all 13 permissions, the protected Administrator
+  role (`admin`), and the seeded administrator user (`adminuser` / password `admin123`).
+- Open `http://localhost:8080/login`, sign in as `adminuser`.
 
 ## Automated validation (start here)
 

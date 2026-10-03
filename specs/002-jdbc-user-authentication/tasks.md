@@ -50,9 +50,8 @@ testing of each story.
       `spring-boot-starter-validation`, `spring-boot-starter-data-jpa`, and for tests
       `spring-boot-starter-test` — nothing additional needed beyond 001's stack
 - [ ] T002 [P] Confirm `src/main/resources/application.properties` has feature 001's settings:
-      PostgreSQL datasource, `spring.jpa.hibernate.ddl-auto=none`, SQL initialization scripts,
-      `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080`, and
-      `app.seed.admin-password` for the seeder (research D-7/D-8)
+      PostgreSQL datasource, `spring.jpa.hibernate.ddl-auto=none`, SQL initialization scripts (`drop.sql`, `schema.sql`, `data.sql`),
+      `spring.jpa.open-in-view=false`, UTC timezone, `server.port=8080` (research D-7/D-8)
 - [ ] T003 [P] Create the test package skeleton `security/`, `guardrails/`, `service/`, `audit/`
       under `src/test/java/com/allensandiego/adm/` — depends on existing 001 structure
 - [ ] T004 [P] Create the `LoginAttemptRegistry` in-memory throttle state manager in
