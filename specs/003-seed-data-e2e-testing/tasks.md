@@ -42,31 +42,34 @@ testing of each story.
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Build dependencies, configuration, and E2E harness for browser-driven testing
+**Purpose**: Build dependencies, configuration, and E2E harness for browser-driven testing under Spring Boot 4.x.x+
 
-- [ ] T001 Verify `pom.xml` carries the E2E stack and add nothing that is missing:
-      `com.microsoft.playwright:playwright` (test scope, for browser automation),
-      `org.junit.jupiter:junit-jupiter-engine`, `org.junit.jupiter:junit-jupiter-api`,
-      `org.springframework.boot:spring-boot-starter-test` (already present from 001), and
+- [ ] T001 Verify `pom.xml` carries the Spring Boot 4.x.x+ modular test stack and E2E tools:
+      `com.microsoft.playwright:playwright` (test scope, 1.63.0),
+      `org.springframework.boot:spring-boot-starter-test`,
+      `org.springframework.security:spring-security-test`,
+      explicit modular starters `org.springframework.boot:spring-boot-test` and
+      `org.springframework.boot:spring-boot-test-autoconfigure`, and
       Maven Failsafe plugin configuration in `pom.xml` to run E2E tests (`*IT`/`E2E` naming)
-- [ ] T002 Configure `src/main/resources/application-test.properties`: seed enabled, admin password
-      default value (research D-8), base URL behavior (start-in-process or connect), and browser
-      headless mode defaults — this file is profile-gated and never merged to production
+- [ ] T002 Configure test properties and Spring Boot 4.x SQL initialization in `src/main/resources/application.properties`
+      and `application-test.properties`: SQL initialization enabled (`spring.sql.init.mode=always`,
+      locations `drop.sql`, `schema.sql`, `data.sql`), base URL behavior (start-in-process or connect), and browser
+      headless mode defaults
 - [ ] T003 Create the E2E harness package `src/test/java/com/allensandiego/adm/e2e/` with
       subpackages `config/`, `support/`, `scenarios/` for test organization (research D-9)
 - [ ] T004 Implement the `E2EConfig` class in
       `src/test/java/com/allensandiego/adm/e2e/config/E2EConfig.java`: resolves the application
       base URL from `e2e.base-url` system property/environment variable, starts the application
-      in-process on a random port with the `test` profile if no URL is supplied, and skips startup
-      if a URL is provided (research D-4)
+      in-process on a random port with Spring Boot 4.x `@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)`
+      if no URL is supplied, and skips startup if a URL is provided (research D-4)
 - [ ] T005 Implement the readiness check utility in
       `src/test/java/com/allensandiego/adm/e2e/support/ReadinessChecker.java`: polls the base URL
       for a readiness endpoint or health check, fails fast with an actionable message when
       unreachable (Edge Case 3, research D-4)
 - [ ] T006 Create the Playwright browser setup in
       `src/test/java/com/allensandiego/adm/e2e/support/BrowserFactory.java`: provisions Chromium
-      via Playwright CLI (`com.microsoft.playwright.CLI install chromium`), creates one
-      `Playwright`/`Browser` per run, and a fresh `BrowserContext`/`Page` per scenario (research D-3)
+      via Playwright CLI (`./mvnw -q exec:java -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"`),
+      creates one `Playwright`/`Browser` per run, and a fresh `BrowserContext`/`Page` per scenario (research D-3)
 - [ ] T007 Implement the page object base class in
       `src/test/java/com/allensandiego/adm/e2e/support/BasePage.java`: provides helper methods for
       state-based waiting (Playwright auto-waiting, FR-016), navigation to a URL, and failure
@@ -74,34 +77,28 @@ testing of each story.
 
 ---
 
-## Phase 2: User Story 1 - Reproducible Seeded Dataset (Priority: P1)
+## Phase 2: User Story 1 - Reproducible Seeded Dataset via `data.sql` (Priority: P1)
 
-**Purpose**: Implement deterministic, idempotent seeded test data for all five RBAC entities
+**Purpose**: Validate and manage deterministic, idempotent seed data loaded from `src/main/resources/data.sql`
 
-**⚠️ CRITICAL**: Feature 003 depends on feature 001's entities and services being complete
-
-- [ ] T008 [US1] Create the `TestDataSeeder` component in
-      `src/main/java/com/allensandiego/adm/config/TestDataSeeder.java`: activated only under
-      the `test`/`dev` profiles (`@Profile`), upserts defined rows by natural key (username, role
-      name, permission code) inside a transaction, uses the same repositories/services as the
-      application, and is safe to run on every startup (research D-1, FR-003)
-- [ ] T009 [US1] Implement the permission seeding logic in `TestDataSeeder`: inserts all 13 centralized
-      permission codes (`permission.view/create/edit`, `user.view/create/edit/activate/roles.assign`,
-      `role.view/create/edit/delete/permissions.edit`) as active from `Permissions.java` (T006 from 001)
-- [ ] T010 [US1] Implement the role seeding logic in `TestDataSeeder`: creates "Super Admin" with all 13
-      codes and "Report Viewer" with only view permissions (`permission.view`, `role.view`,
-      `user.view`) (data-model.md, research D-2)
-- [ ] T011 [US1] Implement the user seeding logic in `TestDataSeeder`: creates three personas:
-      `e2e.admin` (ACTIVE, Super Admin role), `e2e.viewer` (ACTIVE, Report Viewer role), and
-      `e2e.inactive` (INACTIVE, Report Viewer role) with documented credentials (data-model.md,
-      research D-2)
-- [ ] T012 [US1] Implement the mapping seeding logic in `TestDataSeeder`: upserts `role_permissions` for
-      Super Admin → all codes and Report Viewer → its 3 codes; upserts `user_roles` assignments
-      for all three personas (data-model.md)
-- [ ] T013 [US1] Verify idempotency: repeated seeding runs produce identical counts and values without
-      duplicates (SC-003, data-model.md section "Idempotency & reconciliation rules")
-- [ ] T014 [US1] Verify environment gating: seeding is off unless the `test`/`dev` profile is active;
-      production startup creates no test data (FR-004)
+- [ ] T008 [US1] Configure Spring Boot 4.x SQL initialization in `src/main/resources/application.properties`:
+      `spring.sql.init.mode=always`, `spring.sql.init.schema-locations=classpath:drop.sql,classpath:schema.sql`,
+      and `spring.sql.init.data-locations=classpath:data.sql` (research D-1, FR-003)
+- [ ] T009 [US1] Verify the 13 centralized permissions in `src/main/resources/data.sql`:
+      `permission.view/create/edit`, `user.view/create/edit/activate/roles.assign`,
+      `role.view/create/edit/delete/permissions.edit` with deterministic UUIDs and paths
+- [ ] T010 [US1] Verify the seeded roles in `src/main/resources/data.sql`: `admin` (Administrator, protected,
+      granted all 13 permissions), `user` (User, granted 3 view permissions), and `manager` (Manager,
+      granted 6 oversight permissions) (data-model.md, research D-2)
+- [ ] T011 [US1] Verify the seeded users in `src/main/resources/data.sql`: `adminuser` (Alice Admin, `admin123`,
+      role `admin`), `jdoe` (John Doe, `password123`, role `user`), and `jsmith` (Jane Smith, `password123`,
+      roles `user` and `manager`) with Spring Security 7.x `{bcrypt}` password hashes (data-model.md, research D-2)
+- [ ] T012 [US1] Verify the role-permission and user-role mappings in `src/main/resources/data.sql`:
+      `role_permissions` mapping `admin` → all 13 codes, `user` → 3 codes, `manager` → 6 codes;
+      `user_roles` mapping `adminuser` → `admin`, `jdoe` → `user`, `jsmith` → `user` + `manager`
+- [ ] T013 [US1] Verify seed idempotency: application restarts drop and re-seed tables from `data.sql`,
+      producing identical counts and values without duplicates (SC-003)
+- [ ] T014 [US1] Verify Spring Boot 4.x SQL initialization behavior across application startup and test execution
 
 ---
 
@@ -111,28 +108,28 @@ testing of each story.
 refused with a generic message, and deactivated accounts are refused (SC-008 lockout guardrail
 testing in US3).
 
-**Independent Test**: Each scenario is independently runnable from the seeded starting state.
+**Independent Test**: Each scenario is independently runnable from the seeded starting state in `data.sql`.
 
 ### Tests for Sign-In Journeys (write FIRST, ensure they FAIL before implementation) ⚠️
 
 - [ ] T015 [P] [US2] Sign-in success test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given the application
-      and seeded data are running, when a real browser signs in as `e2e.admin` with valid
-      credentials, then it reaches the dashboard without manual steps (FR-007)
+      and `data.sql` seed data are running, when a real browser signs in as `adminuser` with password
+      `admin123`, then it reaches the dashboard without manual steps (FR-007)
 - [ ] T016 [P] [US2] Invalid credentials test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given the sign-in
       screen, when wrong password or unknown username is submitted, then a single generic
       "invalid credentials" message shows and no session is created (FR-007)
 - [ ] T017 [P] [US2] Inactive account test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given the
-      `e2e.inactive` persona, when correct credentials are submitted, then entry is refused and
-      no session is created (FR-007, US3 SC-008)
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: given an inactive
+      account (toggled via `/users/{id}/status` or deactivated test fixture), when credentials are
+      submitted, then entry is refused and no session is created (FR-007, US3 SC-008)
 
 ### Implementation for Sign-In Journeys
 
 - [ ] T018 [P] [US2] Create the `AuthE2EIT` class in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AuthE2EIT.java`: extends `BasePage`,
-      signs in as each persona, and asserts the visible outcomes (FR-007, research D-5)
+      signs in as each seeded persona from `data.sql`, and asserts the visible outcomes (FR-007, research D-5)
 
 ---
 
@@ -147,30 +144,31 @@ role creation and permission editing, and user creation with role assignment.
 
 - [ ] T019 [P] [US2] Permission catalog test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
-      admin, when a new permission is created via the CoreUI form, then it appears in the list and
+      admin (`adminuser`), when a new permission is created via the CoreUI form, then it appears in the list and
       is selectable in the role editor (FR-008, SC-001)
 - [ ] T020 [P] [US2] Permission validation test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
-      admin, when a blank or duplicate permission code is submitted, then a clear validation message
+      admin (`adminuser`), when a blank or duplicate permission code is submitted, then a clear validation message
       shows and nothing is created (FR-008)
 - [ ] T021 [P] [US2] Role creation test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
-      admin, when a role is created with a permission set and reopened, then the saved set is exactly
+      admin (`adminuser`), when a role is created with a permission set and reopened, then the saved set is exactly
       what was configured (FR-008, SC-001)
 - [ ] T022 [P] [US2] User creation test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given signed-in
-      admin, when a user is created and a role assigned, then the assignment persists and is shown on
+      admin (`adminuser`), when a user is created and a role assigned, then the assignment persists and is shown on
       the user detail (FR-008, SC-001)
 - [ ] T023 [P] [US2] Effective permissions test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given a user with
-      multiple roles, when their detail is opened, then displayed effective permissions equal the union
-      of the roles' active permissions; deactivating a permission removes it from the union (FR-009, SC-001)
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: given the seeded
+      multi-role user `jsmith` (roles `user` and `manager` from `data.sql`), when their detail is opened,
+      then displayed effective permissions equal the union of the roles' active permissions (`permission.view`,
+      `user.view`, `user.edit`, `user.activate`, `user.roles.assign`, `role.view`); deactivating a permission removes it from the union (FR-009, SC-001)
 
 ### Implementation for User Story 2
 
 - [ ] T024 [P] [US2] Create the `AdminJourneysE2EIT` class in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/AdminJourneysE2EIT.java`: extends `BasePage`,
-      signs in as admin, and executes each core journey with assertions (FR-008)
+      signs in as `adminuser`, and executes each core journey with assertions (FR-008)
 - [ ] T025 [P] [US2] Create the permission catalog page object in
       `src/test/java/com/allensandiego/adm/e2e/support/PermissionPage.java`: locators for list, form,
       detail views using accessible roles/labels and `data-testid` where needed (research D-5)
@@ -190,43 +188,43 @@ administrator succeeds, while a restricted account is refused and never sees pro
 also proves the lockout guardrails: attempts to delete the final administrative role or remove the
 last administrator are blocked.
 
-**Independent Test**: Each scenario is independently runnable from the seeded starting state.
+**Independent Test**: Each scenario is independently runnable from the seeded starting state in `data.sql`.
 
 ### Tests for User Story 3 (write FIRST, ensure they FAIL before implementation) ⚠️
 
 - [ ] T028 [P] [US3] Deny viewer test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
-      `e2e.viewer` persona, when each management screen/action beyond its view permissions is attempted,
-      then access is refused and no protected content is rendered (FR-010, SC-002)
+      restricted `jdoe` persona (role `user`), when each management screen/action beyond its view permissions is attempted,
+      then access is refused (403) and no protected content is rendered (FR-010, SC-002)
 - [ ] T029 [P] [US3] Allow admin test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
-      admin persona, when the same navigation/actions are performed as E2E-DENY-01, then each succeeds
+      `adminuser` persona (role `admin`), when the same navigation/actions are performed as E2E-DENY-01, then each succeeds
       (dual-sided counterpart of E2E-DENY-01, FR-010)
 - [ ] T030 [P] [US3] Deny inactive test in
-      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
-      `e2e.inactive` persona (session simulated), when any protected screen is requested, then access
+      `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given an
+      inactive account persona (session simulated or toggled to disabled), when any protected screen is requested, then access
       is refused (FR-010, SC-008)
 - [ ] T031 [P] [US3] Lockout final role test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the
-      final protected role (Super Admin), when deletion is attempted, then it is blocked with a visible
+      final protected role (`admin` / Administrator), when deletion is attempted, then it is blocked with a visible
       warning and the dataset is unchanged (FR-011, SC-008)
 - [ ] T032 [P] [US3] Lockout last assignment test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the last
-      administrator assignment, when removal (including self-demotion) is attempted, then it is blocked
+      administrator assignment (`adminuser` assigned `admin`), when removal (including self-demotion) is attempted, then it is blocked
       and nothing changes (FR-011, SC-008)
 - [ ] T033 [P] [US3] Lockout last active user test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: given the last
-      active administrator, when deactivation is attempted, then it is blocked and nothing changes (FR-011,
+      active administrator (`adminuser`), when deactivation is attempted, then it is blocked and nothing changes (FR-011,
       SC-008)
 
 ### Implementation for User Story 3
 
 - [ ] T034 [P] [US3] Create the `PermissionBoundaryE2EIT` class in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/PermissionBoundaryE2EIT.java`: extends
-      `BasePage`, signs in as each persona, and asserts allow/deny outcomes (FR-010)
+      `BasePage`, signs in as each persona (`adminuser`, `jdoe`), and asserts allow/deny outcomes (FR-010)
 - [ ] T035 [P] [US3] Create the lockout scenario helpers in
       `src/test/java/com/allensandiego/adm/e2e/support/LockoutHelpers.java`: methods to attempt deletion
-      of the final role, removal of the last admin assignment, and deactivation of the last active user
+      of the final `admin` role, removal of the last `adminuser` assignment, and deactivation of the last active administrator
       (FR-011)
 
 ---
@@ -239,7 +237,7 @@ last administrator are blocked.
 
 - [ ] T036 [P] [Cross] Determinism test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2EIT.java`: 10 consecutive
-      application restarts with database reset produce identical seeded state (SC-003)
+      application restarts with database reset produce identical seeded state from `data.sql` (SC-003)
 - [ ] T037 [P] [Cross] Order-independence test in
       `src/test/java/com/allensandiego/adm/e2e/scenarios/DeterminismE2EIT.java`: 20 consecutive
       suite runs yield identical pass/fail results with zero flaky failures (SC-005)
@@ -278,15 +276,16 @@ last administrator are blocked.
 
 **Purpose**: Cross-story validation, documentation, and final gate
 
-- [ ] T046 Run `./mvnw verify` and execute the full E2E suite; resolve failures until SC-001..SC-008 all pass
-- [ ] T047 Verify the seeded dataset includes at least: a fully-privileged administrator, one limited user,
-      and one deactivated account, each with documented credentials (FR-002)
+- [ ] T046 Run `./mvnw verify` and execute the full E2E suite under Spring Boot 4.x.x+ modular test infrastructure;
+      resolve failures until SC-001..SC-008 all pass
+- [ ] T047 Verify the seeded dataset from `data.sql` includes at least: a fully-privileged administrator (`adminuser`),
+      a limited user (`jdoe`), and a multi-role user (`jsmith`), each with documented credentials (FR-002)
 - [ ] T048 Confirm the suite drives the application's actual production screens (CoreUI templates in `coreui/`)
       and does not depend on separate test-only pages (FR-018)
 - [ ] T049 Update `specs/003-seed-data-e2e-testing/quickstart.md` with run commands for the E2E suite
-      (if this file exists, otherwise create it)
+      aligned with Spring Boot 4.x.x+ and `./mvnw verify`
 - [ ] T050 Document the seeded credentials in `specs/003-seed-data-e2e-testing/data-model.md` and ensure
-      they are test-only and never used in production
+      they reflect `data.sql`
 
 ---
 

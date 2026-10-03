@@ -144,7 +144,7 @@ every protected screen yields both a success path and a refusal path.
 - **FR-010**: The suite MUST verify both sides of every protected permission boundary: the
   authorized account succeeds and the unauthorized account is refused without seeing protected
   content.
-- **FR-011**: The suite MUST verify the lockout guardrails: the final administrative role (Super Admin) cannot be deleted, the last administrator cannot be removed from their role, and the last active administrator account cannot be deactivated.
+- **FR-011**: The suite MUST verify the lockout guardrails: the final administrative role (`admin` / Administrator) cannot be deleted, the last administrator cannot be removed from their role, and the last active administrator account cannot be deactivated.
 - **FR-012**: Each end-to-end test MUST be independently runnable and order-independent,
   passing on its own from the seeded starting state.
 - **FR-013**: The suite MUST start or connect to the application automatically, requiring only

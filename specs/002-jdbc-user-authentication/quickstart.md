@@ -11,7 +11,7 @@ works end to end.
 - Java 21 and Maven wrapper (`./mvnw`) in the repo root.
 - Feature-001 RBAC model and permission enforcement in place (the five core tables plus the
   `authorization` middleware it defines). Feature 002 rides on that fabric.
-- A valid active account with a set password. The initial bootstrap administrator account (`admin`) is provided by Feature 001's `DataSeeder`. Dedicated E2E test personas (`e2e.admin`, `e2e.viewer`, `e2e.inactive`) arrive with Feature 003 (`specs/003-seed-data-e2e-testing`); unit and security tests in this feature create their own isolated test fixtures.
+- A valid active account with a set password. Seeded user accounts (`adminuser`, `jdoe`, `jsmith`) are initialized via `src/main/resources/data.sql` with hashed BCrypt passwords and exercised in E2E tests (`specs/003-seed-data-e2e-testing`); unit and security tests in this feature create their own isolated test fixtures.
 
 ## Run the automated checks
 
