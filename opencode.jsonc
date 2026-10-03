@@ -72,9 +72,9 @@
             "input": [ "text","image","audio","video" ]
           },
           "limit": {
-            "context": 262144,
-            "input": 131072,
-            "output": 65536
+            "context": 65536,
+            "input": 49162,
+            "output": 16384
           }
         },
         "gemma-4-12b-it": {
